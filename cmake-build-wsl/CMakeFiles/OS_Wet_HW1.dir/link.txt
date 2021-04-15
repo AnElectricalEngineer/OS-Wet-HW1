@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/OS_Wet_HW1.dir/smash.c.o -o OS_Wet_HW1 
