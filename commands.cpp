@@ -1,6 +1,8 @@
 //		commands.c
 //********************************************
 #include "commands.h"
+
+using namespace std;
 //********************************************
 // function name: ExeCmd
 // Description: interprets and executes built-in commands
@@ -26,16 +28,21 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
             num_arg++;
     }
 
-    static char prevPath[MAX_LINE_SIZE];    // Hold prev working directory
-    static bool prevPathValid = false;
+    //static queue<char*> historyQueue; //TODO should history include illegal
+    // commands
+
     
 /*************************************************/
 // Built in Commands PLEASE NOTE NOT ALL REQUIRED
 // ARE IN THIS CHAIN OF IF COMMANDS. PLEASE ADD
 // MORE IF STATEMENTS AS REQUIRED
 /*************************************************/
-    if (!strcmp(cmd, "cd") )    // TODO take care of whitespaces (ignore)
+    if (!strcmp(cmd, "cd") )
+        // TODO take care of whitespaces (ignore)
+        // TODO what to do in case of error (smash error?)
     {
+        static char prevPath[MAX_LINE_SIZE];    // Hold prev working directory
+        static bool prevPathValid = false;
         char *path = args[1];
 
         // Case 1: path equals "-"
@@ -43,17 +50,38 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
         {
             if(prevPathValid)
             {
-
+                char nextPath[MAX_LINE_SIZE];
+                strcpy(nextPath, prevPath);
+                getcwd(prevPath, MAX_LINE_SIZE);    //TODO check if need to
+                // take care of syscall error
+                int changeDirSuccess = chdir(nextPath);
+                if(changeDirSuccess == -1)   // changeDir failed
+                {
+                    perror("cd failed");
+                }
+                else if(changeDirSuccess == 0) //changeDir succeeded
+                {
+                    prevPathValid = true;
+                }
+            }
+            else
+            {
+                // TODO ask what to do if user entered "-" but no prev path exists
             }
         }
         // Case 2: path is not "-"
         else
         {
-            int chdirSuccess = chdir(args[1]);
-            switch(chdirSuccess)
+            getcwd(prevPath, MAX_LINE_SIZE);    //TODO maybe need to check if
+            // succeeded, like pwd
+            int changeDirSuccess = chdir(path);
+            if(changeDirSuccess == -1)   // changeDir failed
             {
-                case -1: perror("cd failed");
-                case 0:
+                //perror("cd failed");
+            }
+            else if(changeDirSuccess == 0) //changeDir succeeded
+            {
+                prevPathValid = true;
             }
         }
     }
@@ -71,7 +99,7 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
         }
         else
         {
-            printf("%s", pwd);
+            printf("%s\n", pwd);
         }
     }
 
@@ -89,7 +117,9 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
         /*************************************************/
     else if (!strcmp(cmd, "showpid"))
     {
-
+        // getpid is always successful, no need to check
+        pid_t myPID = getpid();
+        cout << "smash pid is " << myPID << endl;
     }
         /*************************************************/
     else if (!strcmp(cmd, "fg"))
@@ -105,6 +135,84 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
     else if (!strcmp(cmd, "quit"))
     {
 
+    }
+        /*************************************************/
+    else if (!strcmp(cmd, "history"))
+    {
+
+    }
+        /*************************************************/
+    else if (!strcmp(cmd, "diff"))
+    {
+        //TODO We checked this function! To check again, put folder of test
+        // files in c drive (only works with short path)
+
+        //TODO Ask what to do if try to open same file twice
+
+        // Paths for two files to diff
+        const char* pathName1 = args[1];
+        const char* pathName2 = args[2];
+
+        int fd1 = open(pathName1, O_RDONLY);
+
+        // Exit if opening file 1 fails
+        if(fd1 == -1)
+        {
+            perror("Error opening file 1");
+        }
+        else
+        {
+            int fd2 = open(pathName2, O_RDONLY);
+
+            // Check if opening file 2 fails
+            if(fd2 == -1)
+            {
+                perror("Error opening file 2");
+                int isCloseSuccessful = close(fd1);
+                if(isCloseSuccessful == -1)  // If close is not successful
+                {
+                    perror("Error closing file 1");
+                }
+            }
+
+            // Files 1 and 2 are open
+            char fileBuff1[BUFF_SIZE], fileBuff2[BUFF_SIZE];
+            ssize_t bytesRead1, bytesRead2;
+            bool areFilesSame = true;
+            do
+            {
+                bytesRead1 = read(fd1, fileBuff1, BUFF_SIZE - 1);
+                fileBuff1[bytesRead1] = '\0';
+                bytesRead2 = read(fd2, fileBuff2, BUFF_SIZE - 1);
+                fileBuff2[bytesRead2] = '\0';
+
+                // files 1 and 2 contain some different characters
+                if(strcmp(fileBuff1, fileBuff2) != 0)
+                {
+                    areFilesSame = false;
+                    break;
+                }
+            }while(bytesRead1 > 0 && bytesRead2 > 0);
+
+            if(areFilesSame == true)
+            {
+                cout << "0" << endl;
+            }
+            else
+            {
+                cout << "1" << endl;
+            }
+
+            //  Close the files
+            if(close(fd1))
+            {
+                perror("Error closing file 1");
+            }
+            if(close(fd2))
+            {
+                perror("Error closing file 2");
+            }
+        }
     }
         /*************************************************/
     else // external command

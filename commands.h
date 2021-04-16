@@ -11,10 +11,15 @@
 
 // User added****************
 #include <new>
+#include <queue>
+#include <iostream>
+#include <fcntl.h> //TODO for open - check if allowed
 //***************************
 
 #define MAX_LINE_SIZE 80
 #define MAX_ARG 20
+
+#define BUFF_SIZE 100
 
 
 //typedef enum { FALSE , TRUE } bool_; //TODO check that not needed
