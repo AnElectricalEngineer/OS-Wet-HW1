@@ -1,1 +1,1 @@
-/usr/bin/cc -g CMakeFiles/smash.dir/smash.c.o CMakeFiles/smash.dir/commands.c.o CMakeFiles/smash.dir/signals.c.o -o smash 
+/usr/bin/c++ -g CMakeFiles/smash.dir/smash.cpp.o CMakeFiles/smash.dir/commands.cpp.o CMakeFiles/smash.dir/signals.cpp.o -o smash 

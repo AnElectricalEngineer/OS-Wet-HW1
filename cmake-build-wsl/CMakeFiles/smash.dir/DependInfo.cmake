@@ -1,17 +1,17 @@
 # The set of languages for which implicit dependencies are needed:
 set(CMAKE_DEPENDS_LANGUAGES
-  "C"
+  "CXX"
   )
 # The set of files for implicit dependencies of each language:
-set(CMAKE_DEPENDS_CHECK_C
-  "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/commands.c" "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles/smash.dir/commands.c.o"
-  "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/signals.c" "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles/smash.dir/signals.c.o"
-  "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/smash.c" "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles/smash.dir/smash.c.o"
+set(CMAKE_DEPENDS_CHECK_CXX
+  "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/commands.cpp" "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles/smash.dir/commands.cpp.o"
+  "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/signals.cpp" "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles/smash.dir/signals.cpp.o"
+  "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/smash.cpp" "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles/smash.dir/smash.cpp.o"
   )
-set(CMAKE_C_COMPILER_ID "GNU")
+set(CMAKE_CXX_COMPILER_ID "GNU")
 
 # The include file search paths:
-set(CMAKE_C_TARGET_INCLUDE_PATH
+set(CMAKE_CXX_TARGET_INCLUDE_PATH
   )
 
 # Targets to which this target links.

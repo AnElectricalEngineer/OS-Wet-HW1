@@ -25,12 +25,12 @@ int main(int argc, char *argv[])
     char cmdString[MAX_LINE_SIZE];
 
 
-    //signal declaretions
-    //NOTE: the signal handlers and the function/s that sets the handler should be found in siganls.c
+    //signal declarations
+    //NOTE: the signal handlers and the function/s that sets the handler should be found in signals.c
     /* add your code here */
 
     /************************************/
-    //NOTE: the signal handlers and the function/s that sets the handler should be found in siganls.c
+    //NOTE: the signal handlers and the function/s that sets the handler should be found in signals.c
     //set your signal handlers here
     /* add your code here */
 

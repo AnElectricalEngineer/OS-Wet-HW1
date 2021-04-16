@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/smash.dir/commands.c.obj"
-  "CMakeFiles/smash.dir/signals.c.obj"
-  "CMakeFiles/smash.dir/smash.c.obj"
+  "CMakeFiles/smash.dir/commands.cpp.obj"
+  "CMakeFiles/smash.dir/signals.cpp.obj"
+  "CMakeFiles/smash.dir/smash.cpp.obj"
   "libsmash.dll.a"
   "smash.exe"
   "smash.exe.manifest"
@@ -9,6 +9,6 @@ file(REMOVE_RECURSE
 )
 
 # Per-language clean rules from dependency scanning.
-foreach(lang C)
+foreach(lang CXX)
   include(CMakeFiles/smash.dir/cmake_clean_${lang}.cmake OPTIONAL)
 endforeach()

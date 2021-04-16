@@ -82,19 +82,19 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/commands.c">
+		<Unit filename="/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/commands.cpp">
 			<Option target="smash"/>
 		</Unit>
 		<Unit filename="/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/commands.h">
 			<Option target="smash"/>
 		</Unit>
-		<Unit filename="/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/signals.c">
+		<Unit filename="/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/signals.cpp">
 			<Option target="smash"/>
 		</Unit>
 		<Unit filename="/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/signals.h">
 			<Option target="smash"/>
 		</Unit>
-		<Unit filename="/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/smash.c">
+		<Unit filename="/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/smash.cpp">
 			<Option target="smash"/>
 		</Unit>
 		<Unit filename="/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/CMakeLists.txt">

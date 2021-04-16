@@ -75,62 +75,62 @@ include CMakeFiles/smash.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/smash.dir/flags.make
 
-CMakeFiles/smash.dir/smash.c.obj: CMakeFiles/smash.dir/flags.make
-CMakeFiles/smash.dir/smash.c.obj: ../smash.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/smash.dir/smash.c.obj"
-	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\smash.dir\smash.c.obj -c "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\smash.c"
+CMakeFiles/smash.dir/smash.cpp.obj: CMakeFiles/smash.dir/flags.make
+CMakeFiles/smash.dir/smash.cpp.obj: ../smash.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/smash.dir/smash.cpp.obj"
+	C:\MinGW\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\smash.dir\smash.cpp.obj -c "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\smash.cpp"
 
-CMakeFiles/smash.dir/smash.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/smash.dir/smash.c.i"
-	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\smash.c" > CMakeFiles\smash.dir\smash.c.i
+CMakeFiles/smash.dir/smash.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/smash.dir/smash.cpp.i"
+	C:\MinGW\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\smash.cpp" > CMakeFiles\smash.dir\smash.cpp.i
 
-CMakeFiles/smash.dir/smash.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/smash.dir/smash.c.s"
-	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\smash.c" -o CMakeFiles\smash.dir\smash.c.s
+CMakeFiles/smash.dir/smash.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/smash.dir/smash.cpp.s"
+	C:\MinGW\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\smash.cpp" -o CMakeFiles\smash.dir\smash.cpp.s
 
-CMakeFiles/smash.dir/commands.c.obj: CMakeFiles/smash.dir/flags.make
-CMakeFiles/smash.dir/commands.c.obj: ../commands.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/smash.dir/commands.c.obj"
-	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\smash.dir\commands.c.obj -c "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\commands.c"
+CMakeFiles/smash.dir/commands.cpp.obj: CMakeFiles/smash.dir/flags.make
+CMakeFiles/smash.dir/commands.cpp.obj: ../commands.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/smash.dir/commands.cpp.obj"
+	C:\MinGW\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\smash.dir\commands.cpp.obj -c "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\commands.cpp"
 
-CMakeFiles/smash.dir/commands.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/smash.dir/commands.c.i"
-	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\commands.c" > CMakeFiles\smash.dir\commands.c.i
+CMakeFiles/smash.dir/commands.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/smash.dir/commands.cpp.i"
+	C:\MinGW\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\commands.cpp" > CMakeFiles\smash.dir\commands.cpp.i
 
-CMakeFiles/smash.dir/commands.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/smash.dir/commands.c.s"
-	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\commands.c" -o CMakeFiles\smash.dir\commands.c.s
+CMakeFiles/smash.dir/commands.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/smash.dir/commands.cpp.s"
+	C:\MinGW\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\commands.cpp" -o CMakeFiles\smash.dir\commands.cpp.s
 
-CMakeFiles/smash.dir/signals.c.obj: CMakeFiles/smash.dir/flags.make
-CMakeFiles/smash.dir/signals.c.obj: ../signals.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/smash.dir/signals.c.obj"
-	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\smash.dir\signals.c.obj -c "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\signals.c"
+CMakeFiles/smash.dir/signals.cpp.obj: CMakeFiles/smash.dir/flags.make
+CMakeFiles/smash.dir/signals.cpp.obj: ../signals.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/smash.dir/signals.cpp.obj"
+	C:\MinGW\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\smash.dir\signals.cpp.obj -c "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\signals.cpp"
 
-CMakeFiles/smash.dir/signals.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/smash.dir/signals.c.i"
-	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\signals.c" > CMakeFiles\smash.dir\signals.c.i
+CMakeFiles/smash.dir/signals.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/smash.dir/signals.cpp.i"
+	C:\MinGW\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\signals.cpp" > CMakeFiles\smash.dir\signals.cpp.i
 
-CMakeFiles/smash.dir/signals.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/smash.dir/signals.c.s"
-	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\signals.c" -o CMakeFiles\smash.dir\signals.c.s
+CMakeFiles/smash.dir/signals.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/smash.dir/signals.cpp.s"
+	C:\MinGW\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\signals.cpp" -o CMakeFiles\smash.dir\signals.cpp.s
 
 # Object files for target smash
 smash_OBJECTS = \
-"CMakeFiles/smash.dir/smash.c.obj" \
-"CMakeFiles/smash.dir/commands.c.obj" \
-"CMakeFiles/smash.dir/signals.c.obj"
+"CMakeFiles/smash.dir/smash.cpp.obj" \
+"CMakeFiles/smash.dir/commands.cpp.obj" \
+"CMakeFiles/smash.dir/signals.cpp.obj"
 
 # External object files for target smash
 smash_EXTERNAL_OBJECTS =
 
-smash.exe: CMakeFiles/smash.dir/smash.c.obj
-smash.exe: CMakeFiles/smash.dir/commands.c.obj
-smash.exe: CMakeFiles/smash.dir/signals.c.obj
+smash.exe: CMakeFiles/smash.dir/smash.cpp.obj
+smash.exe: CMakeFiles/smash.dir/commands.cpp.obj
+smash.exe: CMakeFiles/smash.dir/signals.cpp.obj
 smash.exe: CMakeFiles/smash.dir/build.make
 smash.exe: CMakeFiles/smash.dir/linklibs.rsp
 smash.exe: CMakeFiles/smash.dir/objects1.rsp
 smash.exe: CMakeFiles/smash.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Linking C executable smash.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable smash.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\smash.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

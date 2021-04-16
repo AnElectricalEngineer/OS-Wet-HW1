@@ -141,86 +141,86 @@ smash/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/build
 .PHONY : smash/fast
 
-commands.obj: commands.c.obj
+commands.obj: commands.cpp.obj
 
 .PHONY : commands.obj
 
 # target to build an object file
-commands.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/commands.c.obj
-.PHONY : commands.c.obj
+commands.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/commands.cpp.obj
+.PHONY : commands.cpp.obj
 
-commands.i: commands.c.i
+commands.i: commands.cpp.i
 
 .PHONY : commands.i
 
 # target to preprocess a source file
-commands.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/commands.c.i
-.PHONY : commands.c.i
+commands.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/commands.cpp.i
+.PHONY : commands.cpp.i
 
-commands.s: commands.c.s
+commands.s: commands.cpp.s
 
 .PHONY : commands.s
 
 # target to generate assembly for a file
-commands.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/commands.c.s
-.PHONY : commands.c.s
+commands.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/commands.cpp.s
+.PHONY : commands.cpp.s
 
-signals.obj: signals.c.obj
+signals.obj: signals.cpp.obj
 
 .PHONY : signals.obj
 
 # target to build an object file
-signals.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/signals.c.obj
-.PHONY : signals.c.obj
+signals.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/signals.cpp.obj
+.PHONY : signals.cpp.obj
 
-signals.i: signals.c.i
+signals.i: signals.cpp.i
 
 .PHONY : signals.i
 
 # target to preprocess a source file
-signals.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/signals.c.i
-.PHONY : signals.c.i
+signals.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/signals.cpp.i
+.PHONY : signals.cpp.i
 
-signals.s: signals.c.s
+signals.s: signals.cpp.s
 
 .PHONY : signals.s
 
 # target to generate assembly for a file
-signals.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/signals.c.s
-.PHONY : signals.c.s
+signals.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/signals.cpp.s
+.PHONY : signals.cpp.s
 
-smash.obj: smash.c.obj
+smash.obj: smash.cpp.obj
 
 .PHONY : smash.obj
 
 # target to build an object file
-smash.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/smash.c.obj
-.PHONY : smash.c.obj
+smash.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/smash.cpp.obj
+.PHONY : smash.cpp.obj
 
-smash.i: smash.c.i
+smash.i: smash.cpp.i
 
 .PHONY : smash.i
 
 # target to preprocess a source file
-smash.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/smash.c.i
-.PHONY : smash.c.i
+smash.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/smash.cpp.i
+.PHONY : smash.cpp.i
 
-smash.s: smash.c.s
+smash.s: smash.cpp.s
 
 .PHONY : smash.s
 
 # target to generate assembly for a file
-smash.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/smash.c.s
-.PHONY : smash.c.s
+smash.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\smash.dir\build.make CMakeFiles/smash.dir/smash.cpp.s
+.PHONY : smash.cpp.s
 
 # Help Target
 help:

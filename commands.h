@@ -8,9 +8,16 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+
+// User added****************
+#include <new>
+//***************************
+
 #define MAX_LINE_SIZE 80
 #define MAX_ARG 20
-typedef enum { FALSE , TRUE } bool;
+
+
+//typedef enum { FALSE , TRUE } bool_; //TODO check that not needed
 int ExeComp(char* lineSize);
 int BgCmd(char* lineSize, void* jobs);
 int ExeCmd(void* jobs, char* lineSize, char* cmdString);
