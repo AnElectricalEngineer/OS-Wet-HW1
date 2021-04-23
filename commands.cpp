@@ -360,17 +360,20 @@ void ExeExternal(char *args[MAX_ARG], char* cmdString)
             setpgrp();
 
             // Add your code here (execute an external command)
-            execv(cmdString, args);
+            execv(args[0], args);
             perror("Execute command failed");
             exit(1);
 
         default:
-            // Add your code here
+            if (cmdString[strlen(cmdString)-2] == '&')
+            {
+                cmdString[strlen(cmdString)-2] = '\0';
+
+
+            }
             wait(NULL);
             // TODO this is simple example - add background support later
-            /*
-            your code
-            */
+
     }
 }
 //**************************************************************************************
