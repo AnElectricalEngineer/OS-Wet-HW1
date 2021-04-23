@@ -2,6 +2,8 @@
 //********************************************
 #include "commands.h"
 
+#define MAX_HISTORY_SIZE 50
+
 using namespace std;
 //********************************************
 // function name: ExeCmd
@@ -28,10 +30,16 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
             num_arg++;
     }
 
-    //static queue<char*> historyQueue; //TODO should history include illegal
-    // commands
+    static queue<string> historyQueue;   // Holds history of commands
 
-    
+    // Enqueue command if command is not history
+    //TODO check what happens if several legal built in commands are entered,
+    // eg pwd, and then gibberish, and then history.
+    if(strcmp(cmd, "history") != 0)
+    {
+        enqueueNewCmd(&historyQueue, cmdString);
+    }
+
 /*************************************************/
 // Built in Commands PLEASE NOTE NOT ALL REQUIRED
 // ARE IN THIS CHAIN OF IF COMMANDS. PLEASE ADD
@@ -52,32 +60,39 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
             {
                 char nextPath[MAX_LINE_SIZE];
                 strcpy(nextPath, prevPath);
-                getcwd(prevPath, MAX_LINE_SIZE);    //TODO check if need to
-                // take care of syscall error
+                char* getCwdSuccess = getcwd(prevPath, MAX_LINE_SIZE);
+                if(!getCwdSuccess)   // If getcwd() failed
+                {
+                    perror("cwd failed");
+                    return 1;
+                }
                 int changeDirSuccess = chdir(nextPath);
                 if(changeDirSuccess == -1)   // changeDir failed
                 {
                     perror("cd failed");
+                    return 1;
                 }
                 else if(changeDirSuccess == 0) //changeDir succeeded
                 {
                     prevPathValid = true;
                 }
             }
-            else
-            {
-                // TODO ask what to do if user entered "-" but no prev path exists
-            }
+            // If no previous path exists, do nothing
         }
         // Case 2: path is not "-"
         else
         {
-            getcwd(prevPath, MAX_LINE_SIZE);    //TODO maybe need to check if
-            // succeeded, like pwd
+            char* getCwdSuccess = getcwd(prevPath, MAX_LINE_SIZE);
+            if(!getCwdSuccess)   // If getcwd() failed
+            {
+                perror("cwd failed");
+                return 1;
+            }
             int changeDirSuccess = chdir(path);
             if(changeDirSuccess == -1)   // changeDir failed
             {
-                //perror("cd failed");
+                perror("cd failed");
+                return 1;
             }
             else if(changeDirSuccess == 0) //changeDir succeeded
             {
@@ -89,13 +104,14 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
         /*************************************************/
     else if (!strcmp(cmd, "pwd"))
     {
-        // TODO check if works because limit on line size is very small
         // TODO check that limit is correct
 
         // getcwd() returns NULL if buffer size is too small
+        // TODO on forum, it's written to print smash error if pwd fails..
         if(!getcwd(pwd, MAX_LINE_SIZE))
         {
             perror("Path limit exceeded");
+            return 1;
         }
         else
         {
@@ -139,7 +155,94 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
         /*************************************************/
     else if (!strcmp(cmd, "history"))
     {
+        queue<string> tempQueue;
 
+        // Print history of commands
+        while(!historyQueue.empty())
+        {
+            auto currentCommand = historyQueue.front();
+            cout << currentCommand << endl;
+            historyQueue.pop();
+            tempQueue.push(currentCommand);
+        }
+
+        while(!tempQueue.empty())
+        {
+            historyQueue.push(tempQueue.front());
+            tempQueue.pop();
+        }
+    }
+        /*************************************************/
+
+        //TODO ask on forum what should happen if file being written to is
+        // longer than file writing from. Should we delete all contents of
+        // file being written to? Currently, content at end is saved.
+
+        //tested - works
+    else if (!strcmp(cmd, "cp"))
+    {
+        // Paths for two files to copy
+        const char* pathName1 = args[1];
+        const char* pathName2 = args[2];
+
+        int fd1 = open(pathName1, O_RDONLY);
+
+        // Exit if opening file 1 fails
+        if(fd1 == -1)
+        {
+            perror("Error opening file 1");
+            return 1;
+        }
+        else
+        {
+            int fd2 = open(pathName2, O_WRONLY);
+
+            // Check if opening file 2 fails
+            if(fd2 == -1)
+            {
+                perror("Error opening file 2");
+                int isCloseSuccessful = close(fd1);
+                if(isCloseSuccessful == -1)  // If close is not successful
+                {
+                    perror("Error closing file 1");
+                }
+                return 1;
+            }
+            // Files 1 and 2 are open
+            char fileBuff1[BUFF_SIZE];
+            ssize_t bytesRead1;
+            ssize_t didWriteSucceed;
+            do
+            {
+                bytesRead1 = read(fd1, fileBuff1, BUFF_SIZE);
+                didWriteSucceed = write(fd2, fileBuff1, bytesRead1);
+                if (didWriteSucceed == -1)
+                {
+                    perror("Write failed");
+                    break;
+                }
+            }while(bytesRead1 > 0);
+            if (didWriteSucceed >= 0)
+            {
+                cout << pathName1 << " has been copied to " << pathName2 <<
+                endl;
+            }
+            //  Close the files
+            int closeFd1Fail = close(fd1);
+            int closeFd2Fail = close(fd2);
+            if(closeFd1Fail || closeFd2Fail)
+            {
+                if(closeFd1Fail)
+                {
+                    perror("Error closing file 1");
+                }
+                if(closeFd2Fail)
+                {
+                    perror("Error closing file 2");
+                }
+                return 1;
+            }
+        }
     }
         /*************************************************/
     else if (!strcmp(cmd, "diff"))
@@ -159,6 +262,7 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
         if(fd1 == -1)
         {
             perror("Error opening file 1");
+            return 1;
         }
         else
         {
@@ -173,6 +277,7 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
                 {
                     perror("Error closing file 1");
                 }
+                return 1;
             }
 
             // Files 1 and 2 are open
@@ -204,13 +309,19 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
             }
 
             //  Close the files
-            if(close(fd1))
+            int closeFd1Fail = close(fd1);
+            int closeFd2Fail = close(fd2);
+            if(closeFd1Fail || closeFd2Fail)
             {
-                perror("Error closing file 1");
-            }
-            if(close(fd2))
-            {
-                perror("Error closing file 2");
+                if(closeFd1Fail)
+                {
+                    perror("Error closing file 1");
+                }
+                if(closeFd2Fail)
+                {
+                    perror("Error closing file 2");
+                }
+                return 1;
             }
         }
     }
@@ -236,12 +347,12 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
 void ExeExternal(char *args[MAX_ARG], char* cmdString)
 {
     // TODO Need to test if external commands work. Tested failures - work.
+    // TODO Need to add return 1 to perrors here
     int pID;
     switch(pID = fork())
     {
         case -1:
             // Add your code here (error)
-
             perror("Fork failed");
 
         case 0 :
@@ -251,6 +362,7 @@ void ExeExternal(char *args[MAX_ARG], char* cmdString)
             // Add your code here (execute an external command)
             execv(cmdString, args);
             perror("Execute command failed");
+            exit(1);
 
         default:
             // Add your code here
@@ -306,3 +418,18 @@ int BgCmd(char* lineSize, void* jobs)
     return -1;
 }
 
+//**************************************************************************************
+// function name: enqueueNewCmd
+// Description: adds a new command to the history of commands
+// Parameters: pointer to history queue, command string
+// Returns: void
+//**************************************************************************************
+void enqueueNewCmd(queue<string>* historyPtr, char* cmdString)
+{
+    unsigned long currentSize = historyPtr->size();
+    if(currentSize == MAX_HISTORY_SIZE)
+    {
+        historyPtr->pop();
+    }
+    historyPtr->push(cmdString);
+}
