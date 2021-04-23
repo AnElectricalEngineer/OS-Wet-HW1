@@ -5,13 +5,17 @@
 #define MAX_HISTORY_SIZE 50
 
 using namespace std;
+
+static unsigned int totalJobCount = 0; // Counter to keep track of highest job
+// number
+
 //********************************************
 // function name: ExeCmd
 // Description: interprets and executes built-in commands
 // Parameters: pointer to jobs, command string
 // Returns: 0 - success,1 - failure
 //**************************************************************************************
-int ExeCmd(void* jobs, char* lineSize, char* cmdString)
+int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 {
     char* cmd;
     char* args[MAX_ARG];
@@ -328,7 +332,7 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
         /*************************************************/
     else // external command
     {
-        ExeExternal(args, cmdString);
+        ExeExternal(args, cmdString, jobs);
         return 0;
     }
     if (illegal_cmd == true)      //TODO changed from TRUE
@@ -344,7 +348,8 @@ int ExeCmd(void* jobs, char* lineSize, char* cmdString)
 // Parameters: external command arguments, external command string
 // Returns: void
 //**************************************************************************************
-void ExeExternal(char *args[MAX_ARG], char* cmdString)
+void ExeExternal(char *args[MAX_ARG], char* cmdString, map<unsigned int, pJob>*
+jobs)
 {
     // TODO Need to test if external commands work. Tested failures - work.
     // TODO Need to add return 1 to perrors here
@@ -365,15 +370,30 @@ void ExeExternal(char *args[MAX_ARG], char* cmdString)
             exit(1);
 
         default:
-            if (cmdString[strlen(cmdString)-2] == '&')
+            // If command should be run in background
+
+            //TODO lines 376 and 378 were ... -2, I changed to -1. CHECK!
+            if (cmdString[strlen(cmdString)-1] == '&')
             {
-                cmdString[strlen(cmdString)-2] = '\0';
+                cmdString[strlen(cmdString)-1] = '\0';
 
+                // Create new jobs entry
+                pJob pNewJob = new Job; //  TODO free when job finishes!
+                pNewJob->jobName = args[0];
+                pNewJob->jobPid = pID;
+                pNewJob->jobStartTime = time(NULL);
+                pNewJob->jobStatus = "";
 
+                //
+                totalJobCount++;
+                unsigned int jobNumber = totalJobCount;
+                jobs->insert({jobNumber, pNewJob});
             }
-            wait(NULL);
-            // TODO this is simple example - add background support later
-
+            // If command should be run in foreground
+            else
+            {
+                wait(NULL);
+            }
     }
 }
 //**************************************************************************************
