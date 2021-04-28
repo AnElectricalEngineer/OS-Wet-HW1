@@ -124,11 +124,6 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
     }
 
         /*************************************************/
-    else if (!strcmp(cmd, "mkdir"))
-    {
-
-    }
-        /*************************************************/
 
     else if (!strcmp(cmd, "jobs"))
     {
@@ -159,6 +154,15 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
             ++it;
         }
+    }
+
+        /*************************************************/
+        //TODO Continue from here
+    else if (!strcmp(cmd, "kill"))
+    {
+        int jobNum = (int)args[2];
+        auto
+        if(jobs->find(jobNum) != )
     }
         /*************************************************/
     else if (!strcmp(cmd, "showpid"))
@@ -361,6 +365,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         ExeExternal(args, cmdString, jobs);
         return 0;
     }
+    //TODO check forums + add smasherror
     if (illegal_cmd == true)      //TODO changed from TRUE
     {
         printf("smash error: > \"%s\"\n", cmdString);
@@ -398,7 +403,7 @@ jobs)
         default:
             // If command should be run in background
 
-            //TODO lines 376 and 378 were ... -2, I changed to -1. CHECK!
+            //TODO check if background tasks should end on their own
             if (cmdString[strlen(cmdString)-1] == '&')
             {
                 cmdString[strlen(cmdString)-1] = '\0';
