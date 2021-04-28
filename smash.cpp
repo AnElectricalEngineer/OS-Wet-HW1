@@ -60,8 +60,10 @@ int main(int argc, char *argv[])
         strcpy(cmdString, lineSize);
         cmdString[strlen(lineSize)-1]='\0';
         // perform a complicated Command
+        // TODO Exe comp is not relevant for us! Delete at end!
         if(!ExeComp(lineSize)) continue;
         // background command
+        // TODO probably delete BgCmd also
         if(!BgCmd(lineSize, jobs)) continue;
         // built in commands
         ExeCmd(jobs, lineSize, cmdString);

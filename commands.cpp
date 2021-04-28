@@ -132,7 +132,33 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     else if (!strcmp(cmd, "jobs"))
     {
+        // TODO check if need to check if map is empty
+        // Check for processes that have finished and remove them, and print
+        // remaining processes
+        auto it = jobs->begin();
+        while(it != jobs->end() && !jobs->empty())
+        {
+            // Check for processes that have finished and remove them
+            pid_t currentJobPid = it->second->jobPid;
+            kill(currentJobPid, 0);
+            if(errno == ESRCH)
+            {
+                delete it->second;
+                it = jobs->erase(it);
+                continue;
+            }
 
+            // Print each job that is still running
+            time_t currentTime = time(NULL);
+
+            //TODO check if colon should have space on both sides, like example
+            cout << "[" << it->first << "] " << it->second->jobName << ": "
+            << it->second->jobPid << " " << currentTime -
+            it->second->jobStartTime << " secs " << it->second->jobStatus <<
+            endl;
+
+            ++it;
+        }
     }
         /*************************************************/
     else if (!strcmp(cmd, "showpid"))
