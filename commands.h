@@ -41,5 +41,6 @@ jobs);
 
 //Helper functions
 void enqueueNewCmd(queue<string>* historyPtr, char* cmdString);
+void removeTermProcesses(map<unsigned int, pJob>* jobs);
 #endif
 

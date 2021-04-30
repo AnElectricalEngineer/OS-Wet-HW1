@@ -7,3 +7,12 @@
    Synopsis: handle the Control-C */
 #include "signals.h"
 
+//void handler_cntlz(int sig_num)
+//{
+//    if(sig_num == SIGTSTP)
+//    {
+//        pid_t myPid = getpid();
+//        kill(myPid, SIGTSTP);
+//    }
+//}
+

@@ -17,6 +17,8 @@ static unsigned int totalJobCount = 0; // Counter to keep track of highest job
 //**************************************************************************************
 int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 {
+
+    //TODO take care of printing whenever signals are sent
     char* cmd;
     char* args[MAX_ARG];
     char pwd[MAX_LINE_SIZE];
@@ -44,6 +46,9 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         enqueueNewCmd(&historyQueue, cmdString);
     }
 
+
+    //TODO check ALL built in commands for incorrect user input -> smash
+    // error "line".
 /*************************************************/
 // Built in Commands PLEASE NOTE NOT ALL REQUIRED
 // ARE IN THIS CHAIN OF IF COMMANDS. PLEASE ADD
@@ -67,18 +72,19 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
                 char* getCwdSuccess = getcwd(prevPath, MAX_LINE_SIZE);
                 if(!getCwdSuccess)   // If getcwd() failed
                 {
-                    perror("cwd failed");
-                    return 1;
+                    illegal_cmd = true;
                 }
-                int changeDirSuccess = chdir(nextPath);
-                if(changeDirSuccess == -1)   // changeDir failed
+                if(illegal_cmd == false)
                 {
-                    perror("cd failed");
-                    return 1;
-                }
-                else if(changeDirSuccess == 0) //changeDir succeeded
-                {
-                    prevPathValid = true;
+                    int changeDirSuccess = chdir(nextPath);
+                    if (changeDirSuccess == -1)   // changeDir failed
+                    {
+                        illegal_cmd = true;
+                    }
+                    else if (changeDirSuccess == 0) //changeDir succeeded
+                    {
+                        prevPathValid = true;
+                    }
                 }
             }
             // If no previous path exists, do nothing
@@ -86,21 +92,22 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         // Case 2: path is not "-"
         else
         {
-            char* getCwdSuccess = getcwd(prevPath, MAX_LINE_SIZE);
-            if(!getCwdSuccess)   // If getcwd() failed
+            char *getCwdSuccess = getcwd(prevPath, MAX_LINE_SIZE);
+            if (!getCwdSuccess)   // If getcwd() failed
             {
-                perror("cwd failed");
-                return 1;
+                illegal_cmd = true;
             }
-            int changeDirSuccess = chdir(path);
-            if(changeDirSuccess == -1)   // changeDir failed
+            if(illegal_cmd == false)
             {
-                perror("cd failed");
-                return 1;
-            }
-            else if(changeDirSuccess == 0) //changeDir succeeded
-            {
-                prevPathValid = true;
+                int changeDirSuccess = chdir(path);
+                if (changeDirSuccess == -1)   // changeDir failed
+                {
+                    illegal_cmd = true;
+                }
+                else if (changeDirSuccess == 0) //changeDir succeeded
+                {
+                    prevPathValid = true;
+                }
             }
         }
     }
@@ -114,8 +121,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         // TODO on forum, it's written to print smash error if pwd fails..
         if(!getcwd(pwd, MAX_LINE_SIZE))
         {
-            perror("Path limit exceeded");
-            return 1;
+            illegal_cmd = true;
         }
         else
         {
@@ -127,7 +133,6 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     else if (!strcmp(cmd, "jobs"))
     {
-        // TODO check if need to check if map is empty
         // Check for processes that have finished and remove them, and print
         // remaining processes
         auto it = jobs->begin();
@@ -135,8 +140,10 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         {
             // Check for processes that have finished and remove them
             pid_t currentJobPid = it->second->jobPid;
-            kill(currentJobPid, 0);
-            if(errno == ESRCH)
+            int didKillSucceed = kill(currentJobPid, 0); // TODO didnt check if
+            // succeeded (smash
+            // error)
+            if(errno == ESRCH && didKillSucceed == -1)
             {
                 delete it->second;
                 it = jobs->erase(it);
@@ -157,12 +164,30 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
     }
 
         /*************************************************/
-        //TODO Continue from here
     else if (!strcmp(cmd, "kill"))
     {
-        int jobNum = (int)args[2];
-        auto
-        if(jobs->find(jobNum) != )
+        int jobNum = strtol(args[2], NULL, 10);
+        auto jobIt = jobs->find(jobNum);
+
+        // If job does not exist in jobs
+        if(jobIt == jobs->end())
+        {
+            cerr << "smash error: > kill " << jobNum << " - job does not "
+                                                        "exist" << endl;
+        }
+        else
+        {
+            int sig = strtol(args[1] + 1, NULL, 10);
+            pid_t jobPid = jobIt->second->jobPid;
+            int didKillSucceed = kill(jobPid, sig);
+
+            // If sending signal sending failed
+            if(didKillSucceed == -1)
+            {
+                cerr << "smash error: > kill " << jobNum << " - cannot send "
+                                                            "signal" << endl;
+            }
+        }
     }
         /*************************************************/
     else if (!strcmp(cmd, "showpid"))
@@ -174,7 +199,42 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         /*************************************************/
     else if (!strcmp(cmd, "fg"))
     {
+        //TODO add check what happens when jobs is empty
 
+        // Remove processes that have finished from jobs
+        removeTermProcesses(jobs);
+        if (num_arg == 0)
+        {
+            pid_t jobPid = (prev(jobs->end()))->second->jobPid;
+            cout << (prev(jobs->end()))->second->jobName << endl;
+            //pid_t jobPid = jobs->find(totalJobCount)->second->jobPid;
+            //cout << jobs->find(totalJobCount)->second->jobName << endl;
+            if (waitpid(jobPid, NULL, NULL) == -1)
+            {
+                illegal_cmd = true;
+            }
+        }
+        else if (num_arg == 1)
+        {
+            int job_id = strtol(args[1],NULL,10);
+            if ((job_id != 0) && (jobs->find(job_id) != jobs->end()))
+            {
+                pid_t jobPid = jobs->find(job_id)->second->jobPid;
+                cout << jobs->find(jobPid)->second->jobName << endl;
+                if (waitpid(jobPid, NULL, NULL) == -1)
+                {
+                    illegal_cmd = true;
+                }
+            }
+            else
+            {
+                illegal_cmd = true;
+            }
+        }
+        else
+        {
+            illegal_cmd = true;
+        }
     }
         /*************************************************/
     else if (!strcmp(cmd, "bg"))
@@ -224,8 +284,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         // Exit if opening file 1 fails
         if(fd1 == -1)
         {
-            perror("Error opening file 1");
-            return 1;
+            illegal_cmd = true;
         }
         else
         {
@@ -234,47 +293,47 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             // Check if opening file 2 fails
             if(fd2 == -1)
             {
-                perror("Error opening file 2");
-                int isCloseSuccessful = close(fd1);
-                if(isCloseSuccessful == -1)  // If close is not successful
-                {
-                    perror("Error closing file 1");
-                }
-                return 1;
+                illegal_cmd = true;
+                close(fd1);
             }
-            // Files 1 and 2 are open
-            char fileBuff1[BUFF_SIZE];
-            ssize_t bytesRead1;
-            ssize_t didWriteSucceed;
-            do
+            if(illegal_cmd == false)
             {
-                bytesRead1 = read(fd1, fileBuff1, BUFF_SIZE);
-                didWriteSucceed = write(fd2, fileBuff1, bytesRead1);
-                if (didWriteSucceed == -1)
+                // Files 1 and 2 are open
+                char fileBuff1[BUFF_SIZE];
+                ssize_t bytesRead1;
+                ssize_t didWriteSucceed;
+                do
                 {
-                    perror("Write failed");
-                    break;
-                }
-            }while(bytesRead1 > 0);
-            if (didWriteSucceed >= 0)
-            {
-                cout << pathName1 << " has been copied to " << pathName2 <<
-                endl;
-            }
-            //  Close the files
-            int closeFd1Fail = close(fd1);
-            int closeFd2Fail = close(fd2);
-            if(closeFd1Fail || closeFd2Fail)
-            {
-                if(closeFd1Fail)
+                    bytesRead1 = read(fd1, fileBuff1, BUFF_SIZE);
+                    didWriteSucceed = write(fd2, fileBuff1, bytesRead1);
+                    if (didWriteSucceed == -1)
+                    {
+                        illegal_cmd = true;
+                        break;
+                    }
+                }while(bytesRead1 > 0);
+                if(illegal_cmd == false)
                 {
-                    perror("Error closing file 1");
+                    if (didWriteSucceed >= 0)
+                    {
+                        cout << pathName1 << " has been copied to " << pathName2 <<
+                             endl;
+                    }
+                    //  Close the files
+                    int closeFd1Fail = close(fd1);
+                    int closeFd2Fail = close(fd2);
+                    if(closeFd1Fail || closeFd2Fail)
+                    {
+                        if(closeFd1Fail)
+                        {
+                            illegal_cmd = true;
+                        }
+                        if(closeFd2Fail)
+                        {
+                            illegal_cmd = true;
+                        }
+                    }
                 }
-                if(closeFd2Fail)
-                {
-                    perror("Error closing file 2");
-                }
-                return 1;
             }
         }
     }
@@ -295,8 +354,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         // Exit if opening file 1 fails
         if(fd1 == -1)
         {
-            perror("Error opening file 1");
-            return 1;
+            illegal_cmd = true;
         }
         else
         {
@@ -305,57 +363,54 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             // Check if opening file 2 fails
             if(fd2 == -1)
             {
-                perror("Error opening file 2");
-                int isCloseSuccessful = close(fd1);
-                if(isCloseSuccessful == -1)  // If close is not successful
-                {
-                    perror("Error closing file 1");
-                }
-                return 1;
+                illegal_cmd = true;
+                close(fd1);
             }
 
             // Files 1 and 2 are open
-            char fileBuff1[BUFF_SIZE], fileBuff2[BUFF_SIZE];
-            ssize_t bytesRead1, bytesRead2;
-            bool areFilesSame = true;
-            do
+            if(illegal_cmd == false)
             {
-                bytesRead1 = read(fd1, fileBuff1, BUFF_SIZE - 1);
-                fileBuff1[bytesRead1] = '\0';
-                bytesRead2 = read(fd2, fileBuff2, BUFF_SIZE - 1);
-                fileBuff2[bytesRead2] = '\0';
-
-                // files 1 and 2 contain some different characters
-                if(strcmp(fileBuff1, fileBuff2) != 0)
+                char fileBuff1[BUFF_SIZE], fileBuff2[BUFF_SIZE];
+                ssize_t bytesRead1, bytesRead2;
+                bool areFilesSame = true;
+                do
                 {
-                    areFilesSame = false;
-                    break;
-                }
-            }while(bytesRead1 > 0 && bytesRead2 > 0);
+                    bytesRead1 = read(fd1, fileBuff1, BUFF_SIZE - 1);
+                    fileBuff1[bytesRead1] = '\0';
+                    bytesRead2 = read(fd2, fileBuff2, BUFF_SIZE - 1);
+                    fileBuff2[bytesRead2] = '\0';
 
-            if(areFilesSame == true)
-            {
-                cout << "0" << endl;
-            }
-            else
-            {
-                cout << "1" << endl;
-            }
+                    // files 1 and 2 contain some different characters
+                    if(strcmp(fileBuff1, fileBuff2) != 0)
+                    {
+                        areFilesSame = false;
+                        break;
+                    }
+                }while(bytesRead1 > 0 && bytesRead2 > 0);
 
-            //  Close the files
-            int closeFd1Fail = close(fd1);
-            int closeFd2Fail = close(fd2);
-            if(closeFd1Fail || closeFd2Fail)
-            {
-                if(closeFd1Fail)
+                if(areFilesSame == true)
                 {
-                    perror("Error closing file 1");
+                    cout << "0" << endl;
                 }
-                if(closeFd2Fail)
+                else
                 {
-                    perror("Error closing file 2");
+                    cout << "1" << endl;
                 }
-                return 1;
+
+                //  Close the files
+                int closeFd1Fail = close(fd1);
+                int closeFd2Fail = close(fd2);
+                if(closeFd1Fail || closeFd2Fail)
+                {
+                    if(closeFd1Fail)
+                    {
+                        illegal_cmd = true;
+                    }
+                    if(closeFd2Fail)
+                    {
+                        illegal_cmd = true;
+                    }
+                }
             }
         }
     }
@@ -368,7 +423,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
     //TODO check forums + add smasherror
     if (illegal_cmd == true)      //TODO changed from TRUE
     {
-        printf("smash error: > \"%s\"\n", cmdString);
+        fprintf(stderr, "smash error: > %s\n", strerror(errno));
         return 1;
     }
     return 0;
@@ -415,7 +470,6 @@ jobs)
                 pNewJob->jobStartTime = time(NULL);
                 pNewJob->jobStatus = "";
 
-                //
                 totalJobCount++;
                 unsigned int jobNumber = totalJobCount;
                 jobs->insert({jobNumber, pNewJob});
@@ -424,6 +478,7 @@ jobs)
             else
             {
                 wait(NULL);
+                //waitpid(pID, NULL, NULL);
             }
     }
 }
@@ -486,4 +541,28 @@ void enqueueNewCmd(queue<string>* historyPtr, char* cmdString)
         historyPtr->pop();
     }
     historyPtr->push(cmdString);
+}
+//**************************************************************************************
+// function name: removeTermProcesses
+// Description: iterates over jobs and removes processes that have finished
+// Parameters: pointer to jobs
+// Returns: void
+//**************************************************************************************
+void removeTermProcesses(map<unsigned int, pJob>* jobs)
+{
+    // Check for processes that have finished and remove them
+    auto it = jobs->begin();
+    while(it != jobs->end() && !jobs->empty())
+    {
+        // Check for processes that have finished and remove them
+        pid_t currentJobPid = it->second->jobPid;
+        int didKillFail = kill(currentJobPid, 0); // TODO didnt check if
+        // succeeded (smash error)
+        if (errno == ESRCH && didKillFail == -1)
+        {
+            delete it->second;
+            it = jobs->erase(it);
+        }
+        ++it;
+    }
 }
