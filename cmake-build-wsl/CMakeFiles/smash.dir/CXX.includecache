@@ -40,10 +40,6 @@ iostream
 fcntl.h
 -
 
-/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/signals.cpp
-signals.h
-/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/signals.h
-
 /mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/signals.h
 sys/types.h
 -

@@ -9,14 +9,14 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-// User added****************
+// User added*******************************************************************
 #include <new>
 #include <queue>
 #include <string>
 #include <map>
 #include <iostream>
 #include <fcntl.h> //TODO for open - check if allowed
-//***************************
+//******************************************************************************
 
 #define MAX_LINE_SIZE 800 //TODO CHANGE BACK TO 80!
 #define MAX_ARG 20
@@ -33,7 +33,6 @@ typedef struct job
 } Job, *pJob;
 
 //typedef enum { FALSE , TRUE } bool_; //TODO check that not needed
-int ExeComp(char* lineSize);
 int BgCmd(char* lineSize, void* jobs);
 int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString);
 void ExeExternal(char *args[MAX_ARG], char* cmdString, map<unsigned int, pJob>*

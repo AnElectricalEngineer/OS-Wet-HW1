@@ -1,20 +1,20 @@
 //		commands.c
-//********************************************
+//******************************************************************************
 #include "commands.h"
 
 #define MAX_HISTORY_SIZE 50
 
 using namespace std;
 
-static unsigned int totalJobCount = 0; // Counter to keep track of highest job
-// number
+// Counter to keep track of highest job number
+static unsigned int totalJobCount = 0;
 
-//********************************************
+//******************************************************************************
 // function name: ExeCmd
 // Description: interprets and executes built-in commands
 // Parameters: pointer to jobs, command string
 // Returns: 0 - success,1 - failure
-//**************************************************************************************
+//******************************************************************************
 int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 {
 
@@ -49,11 +49,10 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     //TODO check ALL built in commands for incorrect user input -> smash
     // error "line".
-/*************************************************/
-// Built in Commands PLEASE NOTE NOT ALL REQUIRED
-// ARE IN THIS CHAIN OF IF COMMANDS. PLEASE ADD
-// MORE IF STATEMENTS AS REQUIRED
-/*************************************************/
+/******************************************************************************/
+// Built in Commands PLEASE NOTE NOT ALL REQUIRED ARE IN THIS CHAIN OF IF
+// COMMANDS. PLEASE ADD MORE IF STATEMENTS AS REQUIRED
+/******************************************************************************/
     if (!strcmp(cmd, "cd") )
         // TODO take care of whitespaces (ignore)
         // TODO what to do in case of error (smash error?)
@@ -112,7 +111,8 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         }
     }
 
-        /*************************************************/
+    /*************************************************/
+
     else if (!strcmp(cmd, "pwd"))
     {
         // TODO check that limit is correct
@@ -129,7 +129,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         }
     }
 
-        /*************************************************/
+    /*************************************************/
 
     else if (!strcmp(cmd, "jobs"))
     {
@@ -163,7 +163,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         }
     }
 
-        /*************************************************/
+    /*************************************************/
     else if (!strcmp(cmd, "kill"))
     {
         int jobNum = strtol(args[2], NULL, 10);
@@ -189,14 +189,18 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             }
         }
     }
-        /*************************************************/
+
+    /*************************************************/
+
     else if (!strcmp(cmd, "showpid"))
     {
         // getpid is always successful, no need to check
         pid_t myPID = getpid();
         cout << "smash pid is " << myPID << endl;
     }
-        /*************************************************/
+
+    /*************************************************/
+
     else if (!strcmp(cmd, "fg"))
     {
         //TODO add check what happens when jobs is empty
@@ -236,17 +240,23 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             illegal_cmd = true;
         }
     }
-        /*************************************************/
+
+    /*************************************************/
+
     else if (!strcmp(cmd, "bg"))
     {
 
     }
-        /*************************************************/
+
+    /*************************************************/
+
     else if (!strcmp(cmd, "quit"))
     {
 
     }
-        /*************************************************/
+
+    /*************************************************/
+
     else if (!strcmp(cmd, "history"))
     {
         queue<string> tempQueue;
@@ -266,13 +276,14 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             tempQueue.pop();
         }
     }
-        /*************************************************/
+
+    /*************************************************/
 
         //TODO ask on forum what should happen if file being written to is
         // longer than file writing from. Should we delete all contents of
         // file being written to? Currently, content at end is saved.
-
-        //tested - works
+        //
+        // tested - works
     else if (!strcmp(cmd, "cp"))
     {
         // Paths for two files to copy
@@ -316,8 +327,8 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
                 {
                     if (didWriteSucceed >= 0)
                     {
-                        cout << pathName1 << " has been copied to " << pathName2 <<
-                             endl;
+                        cout << pathName1 << " has been copied to "
+                        << pathName2 << endl;
                     }
                     //  Close the files
                     int closeFd1Fail = close(fd1);
@@ -337,7 +348,9 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             }
         }
     }
-        /*************************************************/
+
+    /*************************************************/
+
     else if (!strcmp(cmd, "diff"))
     {
         //TODO We checked this function! To check again, put folder of test
@@ -414,7 +427,9 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             }
         }
     }
-        /*************************************************/
+
+    /*************************************************/
+
     else // external command
     {
         ExeExternal(args, cmdString, jobs);
@@ -428,12 +443,12 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
     }
     return 0;
 }
-//**************************************************************************************
+//******************************************************************************
 // function name: ExeExternal
 // Description: executes external command
 // Parameters: external command arguments, external command string
 // Returns: void
-//**************************************************************************************
+//******************************************************************************
 void ExeExternal(char *args[MAX_ARG], char* cmdString, map<unsigned int, pJob>*
 jobs)
 {
@@ -482,32 +497,13 @@ jobs)
             }
     }
 }
-//**************************************************************************************
-// function name: ExeComp
-// Description: executes complicated command
-// Parameters: command string
-// Returns: 0- if complicated -1- if not
-//**************************************************************************************
-int ExeComp(char* lineSize)
-{
-    char ExtCmd[MAX_LINE_SIZE+2];
-    char *args[MAX_ARG];
-    if ((strstr(lineSize, "|")) || (strstr(lineSize, "<")) || (strstr(lineSize, ">")) || (strstr(lineSize, "*")) || (strstr(lineSize, "?")) || (strstr(lineSize, ">>")) || (strstr(lineSize, "|&")))
-    {
-        // Add your code here (execute a complicated command)
 
-        /*
-        your code
-        */
-    }
-    return -1;
-}
-//**************************************************************************************
+//******************************************************************************
 // function name: BgCmd
 // Description: if command is in background, insert the command to jobs
 // Parameters: command string, pointer to jobs
 // Returns: 0- BG command -1- if not
-//**************************************************************************************
+//******************************************************************************
 int BgCmd(char* lineSize, void* jobs)
 {
 
@@ -527,12 +523,12 @@ int BgCmd(char* lineSize, void* jobs)
     return -1;
 }
 
-//**************************************************************************************
+//******************************************************************************
 // function name: enqueueNewCmd
 // Description: adds a new command to the history of commands
 // Parameters: pointer to history queue, command string
 // Returns: void
-//**************************************************************************************
+//******************************************************************************
 void enqueueNewCmd(queue<string>* historyPtr, char* cmdString)
 {
     unsigned long currentSize = historyPtr->size();
@@ -542,12 +538,12 @@ void enqueueNewCmd(queue<string>* historyPtr, char* cmdString)
     }
     historyPtr->push(cmdString);
 }
-//**************************************************************************************
+//******************************************************************************
 // function name: removeTermProcesses
 // Description: iterates over jobs and removes processes that have finished
 // Parameters: pointer to jobs
 // Returns: void
-//**************************************************************************************
+//******************************************************************************
 void removeTermProcesses(map<unsigned int, pJob>* jobs)
 {
     // Check for processes that have finished and remove them
