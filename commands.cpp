@@ -204,6 +204,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
     else if (!strcmp(cmd, "fg"))
     {
         //TODO add check what happens when jobs is empty
+        //TODO check if should send SIGCONT signal instead of waitpid usage
 
         // Remove processes that have finished from jobs
         removeTermProcesses(jobs);
