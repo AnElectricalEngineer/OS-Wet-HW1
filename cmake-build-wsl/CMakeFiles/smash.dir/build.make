@@ -62,10 +62,10 @@ RM = /home/josh/.local/lib/python3.8/site-packages/cmake/data/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1"
+CMAKE_SOURCE_DIR = "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl"
+CMAKE_BINARY_DIR = "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl"
 
 # Include any dependencies generated for this target.
 include CMakeFiles/smash.dir/depend.make
@@ -78,42 +78,42 @@ include CMakeFiles/smash.dir/flags.make
 
 CMakeFiles/smash.dir/smash.cpp.o: CMakeFiles/smash.dir/flags.make
 CMakeFiles/smash.dir/smash.cpp.o: ../smash.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/smash.dir/smash.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/smash.dir/smash.cpp.o -c "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/smash.cpp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/smash.dir/smash.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/smash.dir/smash.cpp.o -c "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/smash.cpp"
 
 CMakeFiles/smash.dir/smash.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/smash.dir/smash.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/smash.cpp" > CMakeFiles/smash.dir/smash.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/smash.cpp" > CMakeFiles/smash.dir/smash.cpp.i
 
 CMakeFiles/smash.dir/smash.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/smash.dir/smash.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/smash.cpp" -o CMakeFiles/smash.dir/smash.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/smash.cpp" -o CMakeFiles/smash.dir/smash.cpp.s
 
 CMakeFiles/smash.dir/commands.cpp.o: CMakeFiles/smash.dir/flags.make
 CMakeFiles/smash.dir/commands.cpp.o: ../commands.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/smash.dir/commands.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/smash.dir/commands.cpp.o -c "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/commands.cpp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/smash.dir/commands.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/smash.dir/commands.cpp.o -c "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/commands.cpp"
 
 CMakeFiles/smash.dir/commands.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/smash.dir/commands.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/commands.cpp" > CMakeFiles/smash.dir/commands.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/commands.cpp" > CMakeFiles/smash.dir/commands.cpp.i
 
 CMakeFiles/smash.dir/commands.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/smash.dir/commands.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/commands.cpp" -o CMakeFiles/smash.dir/commands.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/commands.cpp" -o CMakeFiles/smash.dir/commands.cpp.s
 
 CMakeFiles/smash.dir/signals.cpp.o: CMakeFiles/smash.dir/flags.make
 CMakeFiles/smash.dir/signals.cpp.o: ../signals.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/smash.dir/signals.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/smash.dir/signals.cpp.o -c "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/signals.cpp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/smash.dir/signals.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/smash.dir/signals.cpp.o -c "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/signals.cpp"
 
 CMakeFiles/smash.dir/signals.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/smash.dir/signals.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/signals.cpp" > CMakeFiles/smash.dir/signals.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/signals.cpp" > CMakeFiles/smash.dir/signals.cpp.i
 
 CMakeFiles/smash.dir/signals.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/smash.dir/signals.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/signals.cpp" -o CMakeFiles/smash.dir/signals.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/signals.cpp" -o CMakeFiles/smash.dir/signals.cpp.s
 
 # Object files for target smash
 smash_OBJECTS = \
@@ -129,7 +129,7 @@ smash: CMakeFiles/smash.dir/commands.cpp.o
 smash: CMakeFiles/smash.dir/signals.cpp.o
 smash: CMakeFiles/smash.dir/build.make
 smash: CMakeFiles/smash.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable smash"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable smash"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/smash.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -142,6 +142,6 @@ CMakeFiles/smash.dir/clean:
 .PHONY : CMakeFiles/smash.dir/clean
 
 CMakeFiles/smash.dir/depend:
-	cd "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl" && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1" "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1" "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl" "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl" "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles/smash.dir/DependInfo.cmake" --color=$(COLOR)
+	cd "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl" && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1" "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1" "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl" "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl" "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles/smash.dir/DependInfo.cmake" --color=$(COLOR)
 .PHONY : CMakeFiles/smash.dir/depend
 

@@ -33,3 +33,9 @@
 .cproject
 .project
 .settings/language.settings.xml
+*.cmake
+*.cmake
+*.make
+*.cmake
+cmake-build-wsl/CMakeFiles/3.18.0/CompilerIdCXX/CMakeCXXCompilerId.cpp
+*.make

@@ -1,3 +1,0 @@
-C:\Users\joshu\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\211.6693.114\bin\cmake\win\bin\cmake.exe -E rm -f CMakeFiles\OS_Wet_HW1.dir/objects.a
-C:\MinGW\bin\ar.exe cr CMakeFiles\OS_Wet_HW1.dir/objects.a @CMakeFiles\OS_Wet_HW1.dir\objects1.rsp
-C:\MinGW\bin\gcc.exe -g -Wl,--whole-archive CMakeFiles\OS_Wet_HW1.dir/objects.a -Wl,--no-whole-archive -o OS_Wet_HW1.exe -Wl,--out-implib,libOS_Wet_HW1.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\OS_Wet_HW1.dir\linklibs.rsp
