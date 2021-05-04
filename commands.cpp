@@ -198,7 +198,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             return 1;
         }
 
-        // Convert string arguments to
+        // Convert string arguments to numbers
 
         //TODO ask if we can assume 0 is not a valid signal because strtol
         // returns 0 if no conversion can be printed.
@@ -598,6 +598,10 @@ jobs)
 
         default:
             // If command should be run in background
+
+            //TODO CURRENTLY there is an error here. If you run an illegal
+            // external command (eg 'ls &' instead of '/bin/ls &'), it is
+            // still added to jobs.
 
             //TODO check if background tasks should end on their own
             if (cmdString[strlen(cmdString)-1] == '&')
