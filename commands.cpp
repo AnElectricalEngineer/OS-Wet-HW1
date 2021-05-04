@@ -18,13 +18,14 @@ static unsigned int totalJobCount = 0;
 int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 {
 
-    //TODO take care of printing whenever signals are sent
+    // TODO ask how does signal handler work, who gets CTRL-Z/C ...?
+    //TODO (not question) take care of printing whenever signals are sent
     char* cmd;
     char* args[MAX_ARG];
     char pwd[MAX_LINE_SIZE];
     char* delimiters = " \t\n";
     int i = 0, num_arg = 0;
-    bool illegal_cmd = false; // illegal command   //TODO changed from FALSE
+    bool illegal_cmd = false; // illegal command
     cmd = strtok(lineSize, delimiters);
     if (cmd == NULL)
         return 0;
@@ -39,24 +40,25 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
     static queue<string> historyQueue;   // Holds history of commands
 
     // Enqueue command if command is not history
-    //TODO check what happens if several legal built in commands are entered,
-    // eg pwd, and then gibberish, and then history.
     if(strcmp(cmd, "history") != 0)
     {
         enqueueNewCmd(&historyQueue, cmdString);
     }
 
-
-    //TODO check ALL built in commands for incorrect user input -> smash
-    // error "line".
 /******************************************************************************/
 // Built in Commands PLEASE NOTE NOT ALL REQUIRED ARE IN THIS CHAIN OF IF
 // COMMANDS. PLEASE ADD MORE IF STATEMENTS AS REQUIRED
 /******************************************************************************/
     if (!strcmp(cmd, "cd") )
-        // TODO take care of whitespaces (ignore)
-        // TODO what to do in case of error (smash error?)
     {
+        //  Check that correct number of arguments were received (1)
+        if(num_arg != 1)
+        {
+            cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+            return 1;
+        }
+
+        //  Here, number of arguments is correct
         static char prevPath[MAX_LINE_SIZE];    // Hold prev working directory
         static bool prevPathValid = false;
         char *path = args[1];
@@ -115,10 +117,13 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     else if (!strcmp(cmd, "pwd"))
     {
-        // TODO check that limit is correct
-
+        //  Check that number of arguments is correct
+        if(num_arg != 0)
+        {
+            cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+            return 1;
+        }
         // getcwd() returns NULL if buffer size is too small
-        // TODO on forum, it's written to print smash error if pwd fails..
         if(!getcwd(pwd, MAX_LINE_SIZE))
         {
             illegal_cmd = true;
@@ -133,6 +138,13 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     else if (!strcmp(cmd, "jobs"))
     {
+        //  Check that number of parameters is correct (0)
+        if(num_arg != 0)
+        {
+            cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+            return 1;
+        }
+
         // Check for processes that have finished and remove them, and print
         // remaining processes
         auto it = jobs->begin();
@@ -140,9 +152,13 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         {
             // Check for processes that have finished and remove them
             pid_t currentJobPid = it->second->jobPid;
-            int didKillSucceed = kill(currentJobPid, 0); // TODO didnt check if
-            // succeeded (smash
-            // error)
+
+            // TODO didnt check if kill succeeded (smash error) because we
+            //  want it to fail.
+            // TODO ask if this is the correct way to check if process still
+            //  exists. Because processes that have finished never leave our
+            //  jobs.
+            int didKillSucceed = kill(currentJobPid, 0);
             if(errno == ESRCH && didKillSucceed == -1)
             {
                 delete it->second;
@@ -166,7 +182,24 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
     /*************************************************/
     else if (!strcmp(cmd, "kill"))
     {
-        int jobNum = strtol(args[2], NULL, 10);
+        //Check if number of parameters is correct (2)
+        if(num_arg != 2)
+        {
+            cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+            return 1;
+        }
+        int jobNum = strtol(args[2], NULL, 10); // jobID
+        int sig = strtol(args[1] + 1, NULL, 10); // signum
+
+        // strtol returns 0 if it fails to convert string - that is: if not
+        // number. If either jobNum or sig are not numbers or if sig is not a
+        // valid signal number, error.
+        if(jobNum == 0 || sig <= 0 || sig > 31)
+        {
+            cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+            return 1;
+        }
+
         auto jobIt = jobs->find(jobNum);
 
         // If job does not exist in jobs
@@ -177,7 +210,6 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         }
         else
         {
-            int sig = strtol(args[1] + 1, NULL, 10);
             pid_t jobPid = jobIt->second->jobPid;
             int didKillSucceed = kill(jobPid, sig);
 
@@ -194,6 +226,13 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     else if (!strcmp(cmd, "showpid"))
     {
+        //  Check that number of parameters is correct (0)
+        if(num_arg != 0)
+        {
+            cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+            return 1;
+        }
+
         // getpid is always successful, no need to check
         pid_t myPID = getpid();
         cout << "smash pid is " << myPID << endl;
@@ -203,8 +242,16 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     else if (!strcmp(cmd, "fg"))
     {
+        //  Check that number of parameters is correct (0 or 1)
+        if(num_arg > 1)
+        {
+            cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+            return 1;
+        }
         //TODO add check what happens when jobs is empty
-        //TODO check if should send SIGCONT signal instead of waitpid usage
+
+        //TODO (Not question for Lior) check if should send SIGCONT signal
+        // instead of waitpid usage - maybe for STOPPED processes.
 
         // Remove processes that have finished from jobs
         removeTermProcesses(jobs);
@@ -253,13 +300,43 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     else if (!strcmp(cmd, "quit"))
     {
+        //  Check that number of parameters is correct (0 or 1)
+        if(num_arg > 1)
+        {
+            cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+            return 1;
+        }
 
+        //TODO ask how should quit work? send SIGKILL to each bg process? or exit?
+        if (num_arg == 0)
+        {
+            exit(0);
+        }
+        else if (num_arg == 1)
+        {
+            if(!strcmp(args[1], "kill"))    // If first argument is "kill"
+            {
+                //TODO (not question) do this
+            }
+        }
+        else //error occurred
+        {
+            cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+            return 1;
+        }
     }
 
     /*************************************************/
 
     else if (!strcmp(cmd, "history"))
     {
+        //  Check that number of parameters is correct (0)
+        if(num_arg != 0)
+        {
+            cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+            return 1;
+        }
+
         queue<string> tempQueue;
 
         // Print history of commands
@@ -280,13 +357,19 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     /*************************************************/
 
-        //TODO ask on forum what should happen if file being written to is
+        //TODO ask what should happen if file being written to is
         // longer than file writing from. Should we delete all contents of
         // file being written to? Currently, content at end is saved.
-        //
-        // tested - works
+
     else if (!strcmp(cmd, "cp"))
     {
+        //  Check that number of parameters is correct (2)
+        if(num_arg != 2)
+        {
+            cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+            return 1;
+        }
+
         // Paths for two files to copy
         const char* pathName1 = args[1];
         const char* pathName2 = args[2];
@@ -354,7 +437,14 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     else if (!strcmp(cmd, "diff"))
     {
-        //TODO We checked this function! To check again, put folder of test
+        //  Check that number of parameters is correct (2)
+        if(num_arg != 2)
+        {
+            cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+            return 1;
+        }
+
+        // We checked this function! To check again, put folder of test
         // files in c drive (only works with short path)
 
         //TODO Ask what to do if try to open same file twice
@@ -436,8 +526,8 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         ExeExternal(args, cmdString, jobs);
         return 0;
     }
-    //TODO check forums + add smasherror
-    if (illegal_cmd == true)      //TODO changed from TRUE
+
+    if (illegal_cmd == true)
     {
         fprintf(stderr, "smash error: > %s\n", strerror(errno));
         return 1;
@@ -453,8 +543,9 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 void ExeExternal(char *args[MAX_ARG], char* cmdString, map<unsigned int, pJob>*
 jobs)
 {
-    // TODO Need to test if external commands work. Tested failures - work.
-    // TODO Need to add return 1 to perrors here
+    // TODO (not question) Need to test if external commands work. Tested
+    //  failures - work.
+    // TODO  (not question) Need to add return 1 to perrors here
     int pID;
     switch(pID = fork())
     {
@@ -480,7 +571,8 @@ jobs)
                 cmdString[strlen(cmdString)-1] = '\0';
 
                 // Create new jobs entry
-                pJob pNewJob = new Job; //  TODO free when job finishes!
+                pJob pNewJob = new Job; //  TODO (not question) free when job
+                // finishes!
                 pNewJob->jobName = args[0];
                 pNewJob->jobPid = pID;
                 pNewJob->jobStartTime = time(NULL);
@@ -553,8 +645,9 @@ void removeTermProcesses(map<unsigned int, pJob>* jobs)
     {
         // Check for processes that have finished and remove them
         pid_t currentJobPid = it->second->jobPid;
-        int didKillFail = kill(currentJobPid, 0); // TODO didnt check if
-        // succeeded (smash error)
+        int didKillFail = kill(currentJobPid, 0);
+        // TODO didnt check if succeeded (smash error) because we expect it
+        //  to fail
         if (errno == ESRCH && didKillFail == -1)
         {
             delete it->second;

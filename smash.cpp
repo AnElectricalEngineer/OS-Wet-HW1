@@ -48,10 +48,10 @@ int main(int argc, char *argv[])
 
     /* add your code here */
 
-//    struct sigaction ctrlz = {0};
-//    ctrlz.sa_handler = &handler_cntlz;
-//    sigfillset(&ctrlz.sa_mask);
-//    sigaction(SIGTSTP, &ctrlz, NULL);
+    struct sigaction ctrlz = {0};
+    ctrlz.sa_handler = &handler_cntlz;
+    sigfillset(&ctrlz.sa_mask);
+    sigaction(SIGTSTP, &ctrlz, NULL);
 
     /************************************/
 
