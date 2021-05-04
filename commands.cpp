@@ -198,13 +198,22 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             return 1;
         }
 
-        // Convert string arguments to numbers
+        // Convert string arguments to
+
+        //TODO ask if we can assume 0 is not a valid signal because strtol
+        // returns 0 if no conversion can be printed.
+
+        //TODO (not question) maybe use std::stoi?
         int sig = strtol(args[1] + 1, NULL, 10); // signum
         int jobNum = strtol(args[2], NULL, 10); // jobID
 
         // strtol returns 0 if it fails to convert string - that is: if not
         // value passed to it for conversion is not a number. If either jobNum
         // or sig are not numbers or if sig is not a valid signal number, error.
+
+        //TODO (not question) change to if(jobNum == 0 || sig == 0) because
+        // Lior said don't need to check that sig is valid signal number,
+        // only that it is a number.
         if(jobNum == 0 || sig <= 0 || sig > 31)
         {
             cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
