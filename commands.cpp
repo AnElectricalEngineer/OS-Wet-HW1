@@ -39,7 +39,8 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     static queue<string> historyQueue;   // Holds history of commands
 
-    // Enqueue command if command is not history
+    // Enqueue command if command is not history. Holds all prev commands
+    // (except 'history', including gibberish.
     if(strcmp(cmd, "history") != 0)
     {
         enqueueNewCmd(&historyQueue, cmdString);
@@ -180,6 +181,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
     }
 
     /*************************************************/
+    //TODO (not question) test this, including errors
     else if (!strcmp(cmd, "kill"))
     {
         //Check if number of parameters is correct (2)
@@ -188,12 +190,21 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
             return 1;
         }
-        int jobNum = strtol(args[2], NULL, 10); // jobID
+
+        //Check if first argument (signum) begins with "-"
+        if(args[1][0] != '-')
+        {
+            cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+            return 1;
+        }
+
+        // Convert string arguments to numbers
         int sig = strtol(args[1] + 1, NULL, 10); // signum
+        int jobNum = strtol(args[2], NULL, 10); // jobID
 
         // strtol returns 0 if it fails to convert string - that is: if not
-        // number. If either jobNum or sig are not numbers or if sig is not a
-        // valid signal number, error.
+        // value passed to it for conversion is not a number. If either jobNum
+        // or sig are not numbers or if sig is not a valid signal number, error.
         if(jobNum == 0 || sig <= 0 || sig > 31)
         {
             cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
@@ -207,6 +218,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         {
             cerr << "smash error: > kill " << jobNum << " - job does not "
                                                         "exist" << endl;
+            return 1;
         }
         else
         {
@@ -218,6 +230,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             {
                 cerr << "smash error: > kill " << jobNum << " - cannot send "
                                                             "signal" << endl;
+                return 1;
             }
         }
     }
@@ -255,12 +268,13 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
         // Remove processes that have finished from jobs
         removeTermProcesses(jobs);
+
         if (num_arg == 0)
         {
             pid_t jobPid = (prev(jobs->end()))->second->jobPid;
             cout << (prev(jobs->end()))->second->jobName << endl;
-            //pid_t jobPid = jobs->find(totalJobCount)->second->jobPid;
-            //cout << jobs->find(totalJobCount)->second->jobName << endl;
+
+
             if (waitpid(jobPid, NULL, NULL) == -1)
             {
                 illegal_cmd = true;
@@ -268,6 +282,10 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         }
         else if (num_arg == 1)
         {
+            // TODO (not question) Go over this - I think if job_id == 0 or
+            //  no job with job_id in jobs -> user error. I think some of
+            //  illegal cmds here are WRONG because they are not due to sys call
+            //  failure.
             int job_id = strtol(args[1],NULL,10);
             if ((job_id != 0) && (jobs->find(job_id) != jobs->end()))
             {
@@ -281,11 +299,16 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             else
             {
                 illegal_cmd = true;
+                // TODO (not question) I think here should be
+                //  user error (job id is 0 which means strtol failed or job
+                //  is not in jobs
             }
         }
         else
         {
             illegal_cmd = true;
+            // TODO (not question) I think not necessary because either
+            //  num_arg is 0, 1, or >1.
         }
     }
 
@@ -551,7 +574,7 @@ jobs)
     {
         case -1:
             // Add your code here (error)
-            perror("Fork failed");
+            fprintf(stderr, "smash error: > %s\n", strerror(errno));
 
         case 0 :
             // Child Process
@@ -559,8 +582,10 @@ jobs)
 
             // Add your code here (execute an external command)
             execv(args[0], args);
-            perror("Execute command failed");
-            exit(1);
+
+            //If execv returns - error
+            fprintf(stderr, "smash error: > %s\n", strerror(errno));
+            exit(1); // TODO check if should exit, or what else?
 
         default:
             // If command should be run in background
