@@ -1,0 +1,10 @@
+#!/bin/bash
+
+function long_loop {
+	for (( i=999999 ; 0<=i ; i-- )); do
+		echo -n "YOU ARE STUPID "
+		echo ${i}
+	done
+}
+
+long_loop
