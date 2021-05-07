@@ -226,7 +226,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         {
             pid_t jobPid = jobIt->second->jobPid;
             int didKillSucceed = kill(jobPid, sig);
-
+            // TODO Add print that signal was sent
             // If sending signal sending failed
             if(didKillSucceed == -1)
             {
