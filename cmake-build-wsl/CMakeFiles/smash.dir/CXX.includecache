@@ -6,6 +6,10 @@
 
 #IncludeRegexTransform: 
 
+/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/commands.cpp
+commands.h
+/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/commands.h
+
 /mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/commands.h
 unistd.h
 -
@@ -34,43 +38,5 @@ map
 iostream
 -
 fcntl.h
--
-
-/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/signals.h
-sys/types.h
--
-sys/wait.h
--
-unistd.h
--
-stdio.h
--
-stdlib.h
--
-string.h
--
-signal.h
--
-
-/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/smash.cpp
-sys/types.h
--
-sys/wait.h
--
-unistd.h
--
-stdio.h
--
-stdlib.h
--
-string.h
--
-signal.h
--
-commands.h
-/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/commands.h
-signals.h
-/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/signals.h
-map
 -
 

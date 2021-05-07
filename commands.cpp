@@ -270,7 +270,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
             return 1;
         }
-        //TODO add check what happens when jobs is empty
+        //TODO add check what happens when fg is called and jobs is empty
 
         //TODO (Not question for Lior) check if should send SIGCONT signal
         // instead of waitpid usage - maybe for STOPPED processes.
@@ -479,7 +479,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         // We checked this function! To check again, put folder of test
         // files in c drive (only works with short path)
 
-        //TODO Ask what to do if try to open same file twice
+        //TODO (not question) Check if opening same file twice works
 
         // Paths for two files to diff
         const char* pathName1 = args[1];
@@ -594,7 +594,8 @@ jobs)
 
             //If execv returns - error
             fprintf(stderr, "smash error: > %s\n", strerror(errno));
-            exit(1); // TODO check if should exit, or what else?
+            exit(1); // Lior said correct way to exit process - just dont do
+            // exit in main
 
         default:
             // If command should be run in background
