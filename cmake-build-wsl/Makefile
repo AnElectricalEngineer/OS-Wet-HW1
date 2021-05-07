@@ -67,10 +67,10 @@ RM = /home/josh/.local/lib/python3.8/site-packages/cmake/data/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1"
+CMAKE_SOURCE_DIR = "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl"
+CMAKE_BINARY_DIR = "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl"
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -99,9 +99,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles" "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl//CMakeFiles/progress.marks"
+	$(CMAKE_COMMAND) -E cmake_progress_start "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles" "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl//CMakeFiles/progress.marks"
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles" 0
+	$(CMAKE_COMMAND) -E cmake_progress_start "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/CMakeFiles" 0
 .PHONY : all
 
 # The main clean target

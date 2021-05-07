@@ -28,20 +28,23 @@ void handler_cntlz(int sig_num)
             {
                 fprintf(stderr, "smash error: > %s\n", strerror(errno));
             }
+            //  If sys call failed because process doesn't exist, ignore
+            return;
         }
 
         //If signal was successfully sent
         else
         {
+            //  Print that signal was sent
             printf("signal SIGTSTP was sent to pid %d\n", lastFgPid);
 
+            //  Check if process was previously in jobs
             auto it = jobs->begin();
-
             while(it != jobs->end() && !jobs->empty())
             {
                 pid_t currentJobPid = it->second->jobPid;
 
-                // If job was already in jobs
+                // If job was already in jobs, update its status
                 if(currentJobPid == lastFgPid)
                 {
                     it->second->jobStatus = "(Stopped)";
@@ -51,7 +54,6 @@ void handler_cntlz(int sig_num)
             }
 
             // If job was not in jobs, add it
-            // Create new jobs entry
             pJob pNewJob = new Job;
             pNewJob->jobName = lastFgJobName;
             pNewJob->jobPid = lastFgPid;

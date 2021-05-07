@@ -8,6 +8,7 @@ using namespace std;
 
 // Counter to keep track of highest job number
 unsigned int totalJobCount = 0;
+
 bool isFgProcess = false;
 pid_t lastFgPid;
 string lastFgJobName;
@@ -278,15 +279,24 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             isFgProcess = true;
             lastFgPid = jobPid;
             lastFgJobName = jobName;
-            if (waitpid(jobPid, NULL, NULL) == -1)
-            {
-                illegal_cmd = true; //TODO continue from here, check if wait
-                // is correct...
-            }
+//            if (waitpid(jobPid, NULL, NULL) == -1)
+//            {
+//                printf("got here\n");
+//                illegal_cmd = true; //TODO continue from here, check if wait
+//                // is correct...
+//            }
+            //TODO tell Keren - the problem was that job could be RUNNING
+            // in bg, or stopped. If it was running - fine, but if it was
+            // stopped, problem. Need to send it sigcont to start it.
+            kill(jobPid, SIGCONT); //TODO maybe need to check kill for
+            // errors
+            printf("signal SIGCONT was sent to pid %d\n", jobPid);
+            waitpid(jobPid, NULL, NULL);//TODO maybe need to check waitpid
+            //for errors - but i think it causes problems - 'sys call
+            // interrupted'...
             isFgProcess = false;
         }
 
-        //TODO add here isFgProcess updates etc...from line 278
         else if (num_arg == 1)
         {
             int job_id;
@@ -302,12 +312,24 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
             if ((jobs->find(job_id) != jobs->end()))
             {
-                pid_t jobPid = jobs->find(job_id)->second->jobPid;
-                cout << jobs->find(jobPid)->second->jobName << endl;
-                if (waitpid(jobPid, NULL, NULL) == -1)
-                {
-                    illegal_cmd = true;
-                }
+                pJob Job = jobs->find(job_id)->second;
+                pid_t jobPid = Job->jobPid;
+                string jobName = Job->jobName;
+                cout << jobName << endl;
+//                if (waitpid(jobPid, NULL, NULL) == -1)
+//                {
+//                    illegal_cmd = true;
+//                }
+                isFgProcess = true;
+                lastFgPid = jobPid;
+                lastFgJobName = jobName;
+                kill(jobPid, SIGCONT); //TODO maybe need to check kill for
+                // errors
+                printf("signal SIGCONT was sent to pid %d\n", jobPid);
+                waitpid(jobPid, NULL, NULL); //TODO maybe need to check waitpid
+                //for errors - but i think it causes problems - 'sys call
+                //interrupted'...
+                isFgProcess = false;
             }
 
             // job_id is a number, but no such job exists in jobs
@@ -675,7 +697,7 @@ void enqueueNewCmd(queue<string>* historyPtr, char* cmdString)
     historyPtr->push(cmdString);
 }
 //******************************************************************************
-// function name: removeTermProcesses
+// function name: updateJobs
 // Description: iterates over jobs and updates process statuses
 // Parameters: pointer to jobs
 // Returns: false if succeeded, true if sys call fail
