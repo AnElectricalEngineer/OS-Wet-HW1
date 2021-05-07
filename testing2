@@ -2,9 +2,7 @@
 
 function long_loop {
 	for (( i=99000 ; 0<=i ; i-- )); do
-		echo -n "YOU ARE STUPID "
-		echo ${i}
-	done
+		echo
 }
 
 long_loop

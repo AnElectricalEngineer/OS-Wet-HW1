@@ -7,7 +7,11 @@
 using namespace std;
 
 // Counter to keep track of highest job number
-static unsigned int totalJobCount = 0;
+unsigned int totalJobCount = 0;
+bool isFgProcess = false;
+pid_t lastFgPid;
+string lastFgJobName;
+
 
 //******************************************************************************
 // function name: ExeCmd
@@ -137,7 +141,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     /*************************************************/
 
-    else if (!strcmp(cmd, "jobs"))
+    else if (!strcmp(cmd, "jobs"))  //TODO test with actual bg process
     {
         //  Check that number of parameters is correct (0)
         if(num_arg != 0)
@@ -146,37 +150,25 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             return 1;
         }
 
-        // Check for processes that have finished and remove them, and print
-        // remaining processes
-        auto it = jobs->begin();
-        while(it != jobs->end() && !jobs->empty())
+        // Update jobs
+        illegal_cmd = updateJobs(jobs);
+
+        // If there were no sys call errors in updateJobs
+        if(!illegal_cmd)
         {
-            // Check for processes that have finished and remove them
-            pid_t currentJobPid = it->second->jobPid;
-
-            // TODO didnt check if kill succeeded (smash error) because we
-            //  want it to fail.
-            // TODO ask if this is the correct way to check if process still
-            //  exists. Because processes that have finished never leave our
-            //  jobs.
-            int didKillSucceed = kill(currentJobPid, 0);
-            if(errno == ESRCH && didKillSucceed == -1)
+            // Print jobs
+            auto it = jobs->begin();
+            while(it != jobs->end() && !jobs->empty())
             {
-                delete it->second;
-                it = jobs->erase(it);
-                continue;
+                time_t currentTime = time(NULL);
+
+                cout << "[" << it->first << "] " << it->second->jobName << " : "
+                     << it->second->jobPid << " " << currentTime -
+                     it->second->jobStartTime << " secs " <<
+                     it->second->jobStatus << endl;
+
+                ++it;
             }
-
-            // Print each job that is still running
-            time_t currentTime = time(NULL);
-
-            //TODO check if colon should have space on both sides, like example
-            cout << "[" << it->first << "] " << it->second->jobName << ": "
-            << it->second->jobPid << " " << currentTime -
-            it->second->jobStartTime << " secs " << it->second->jobStatus <<
-            endl;
-
-            ++it;
         }
     }
 
@@ -264,39 +256,51 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     else if (!strcmp(cmd, "fg"))
     {
-        //  Check that number of parameters is correct (0 or 1)
-        if(num_arg > 1)
+        //  Check that number of parameters is correct (0 or 1), and that jobs
+        //  contains at least one job
+        if(num_arg > 1 || jobs->empty())
         {
             cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
             return 1;
         }
-        //TODO add check what happens when fg is called and jobs is empty
+        //TODO add check that when fg is called and jobs is empty, error is
+        // printed
 
-        //TODO (Not question for Lior) check if should send SIGCONT signal
-        // instead of waitpid usage - maybe for STOPPED processes.
-
-        // Remove processes that have finished from jobs
-        removeTermProcesses(jobs);
+        // update jobs list
+        updateJobs(jobs);
 
         if (num_arg == 0)
         {
             pid_t jobPid = (prev(jobs->end()))->second->jobPid;
-            cout << (prev(jobs->end()))->second->jobName << endl;
+            string jobName = (prev(jobs->end()))->second->jobName;
+            cout << jobName << endl;
 
-
+            isFgProcess = true;
+            lastFgPid = jobPid;
+            lastFgJobName = jobName;
             if (waitpid(jobPid, NULL, NULL) == -1)
             {
-                illegal_cmd = true;
+                illegal_cmd = true; //TODO continue from here, check if wait
+                // is correct...
             }
+            isFgProcess = false;
         }
+
+        //TODO add here isFgProcess updates etc...from line 278
         else if (num_arg == 1)
         {
-            // TODO (not question) Go over this - I think if job_id == 0 or
-            //  no job with job_id in jobs -> user error. I think some of
-            //  illegal cmds here are WRONG because they are not due to sys call
-            //  failure.
-            int job_id = strtol(args[1],NULL,10);
-            if ((job_id != 0) && (jobs->find(job_id) != jobs->end()))
+            int job_id;
+            try
+            {
+                job_id = std::stoi(args[1]);
+            }
+            catch(std::invalid_argument&)
+            {
+                cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+                return 1;
+            }
+
+            if ((jobs->find(job_id) != jobs->end()))
             {
                 pid_t jobPid = jobs->find(job_id)->second->jobPid;
                 cout << jobs->find(jobPid)->second->jobName << endl;
@@ -305,19 +309,13 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
                     illegal_cmd = true;
                 }
             }
+
+            // job_id is a number, but no such job exists in jobs
             else
             {
-                illegal_cmd = true;
-                // TODO (not question) I think here should be
-                //  user error (job id is 0 which means strtol failed or job
-                //  is not in jobs
+                cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+                return 1;
             }
-        }
-        else
-        {
-            illegal_cmd = true;
-            // TODO (not question) I think not necessary because either
-            //  num_arg is 0, 1, or >1.
         }
     }
 
@@ -330,6 +328,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     /*************************************************/
 
+    //TODO work on this
     else if (!strcmp(cmd, "quit"))
     {
         //  Check that number of parameters is correct (0 or 1)
@@ -604,14 +603,12 @@ jobs)
             // external command (eg 'ls &' instead of '/bin/ls &'), it is
             // still added to jobs.
 
-            //TODO check if background tasks should end on their own
             if (cmdString[strlen(cmdString)-1] == '&')
             {
                 cmdString[strlen(cmdString)-1] = '\0';
 
                 // Create new jobs entry
-                pJob pNewJob = new Job; //  TODO (not question) free when job
-                // finishes!
+                pJob pNewJob = new Job;
                 pNewJob->jobName = args[0];
                 pNewJob->jobPid = pID;
                 pNewJob->jobStartTime = time(NULL);
@@ -624,8 +621,15 @@ jobs)
             // If command should be run in foreground
             else
             {
-                wait(NULL);
-                //waitpid(pID, NULL, NULL);
+                //wait(NULL);
+                isFgProcess = true;
+                lastFgPid = pID;
+                lastFgJobName = args[0];
+                // TODO check this
+                // waitPid with WUNTRACED option will return if child (fg
+                // process) is terminated OR stopped
+                waitpid(pID, NULL, WUNTRACED);
+                isFgProcess = false;
             }
     }
 }
@@ -672,26 +676,59 @@ void enqueueNewCmd(queue<string>* historyPtr, char* cmdString)
 }
 //******************************************************************************
 // function name: removeTermProcesses
-// Description: iterates over jobs and removes processes that have finished
+// Description: iterates over jobs and updates process statuses
 // Parameters: pointer to jobs
-// Returns: void
+// Returns: false if succeeded, true if sys call fail
 //******************************************************************************
-void removeTermProcesses(map<unsigned int, pJob>* jobs)
+bool updateJobs(map<unsigned int, pJob>* jobs)
 {
     // Check for processes that have finished and remove them
     auto it = jobs->begin();
     while(it != jobs->end() && !jobs->empty())
     {
-        // Check for processes that have finished and remove them
         pid_t currentJobPid = it->second->jobPid;
-        int didKillFail = kill(currentJobPid, 0);
-        // TODO didnt check if succeeded (smash error) because we expect it
-        //  to fail
-        if (errno == ESRCH && didKillFail == -1)
+        int processStatus;
+        pid_t waitPid = waitpid(currentJobPid, &processStatus,
+                                WNOHANG | WUNTRACED | WCONTINUED);
+
+        //Sys call error
+        if(waitPid == -1)
         {
-            delete it->second;
-            it = jobs->erase(it);
+            fprintf(stderr, "smash error: > %s\n", strerror(errno));
+            return true;
         }
-        ++it;
+
+        // if job HAS changed status
+        else if(waitPid == currentJobPid)
+        {
+            // If process was terminated normally or by signal
+            if(WIFEXITED(processStatus) || WIFSIGNALED(processStatus))
+            {
+                delete it->second;
+                it = jobs->erase(it);   // Automatically increments iterator
+            }
+
+            // If process was stopped
+            else if(WIFSTOPPED(processStatus))
+            {
+                it->second->jobStatus = "(Stopped)";
+                ++it;
+            }
+
+            // TODO check if necessary
+            // If processes was continued by means of SIGCONT
+            else if(WIFCONTINUED(processStatus))
+            {
+                it->second->jobStatus = "";
+                ++it;
+            }
+        }
+
+        // if job did NOT change status, do not modify its entry in jobs
+        else
+        {
+            ++it;
+        }
     }
+    return false;
 }

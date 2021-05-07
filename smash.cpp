@@ -48,10 +48,17 @@ int main(int argc, char *argv[])
 
     /* add your code here */
 
+    // Define signal handler for CTRL-Z
     struct sigaction ctrlz = {0};
     ctrlz.sa_handler = &handler_cntlz;
     sigfillset(&ctrlz.sa_mask);
     sigaction(SIGTSTP, &ctrlz, NULL);
+
+    // Define signal handler for CTRL-C
+    struct sigaction ctrlc = {0};
+    ctrlc.sa_handler = &handler_cntlc;
+    sigfillset(&ctrlc.sa_mask);
+    sigaction(SIGINT, &ctrlc, NULL);
 
 
     /************************************/
