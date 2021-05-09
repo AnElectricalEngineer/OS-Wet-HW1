@@ -32,10 +32,6 @@ typedef struct job
     string jobStatus;
 } Job, *pJob;
 
-//typedef enum { FALSE , TRUE } bool_; //TODO check that not needed
-
-//TODO delete BgCmd
-int BgCmd(char* lineSize, void* jobs);
 int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString);
 void ExeExternal(char *args[MAX_ARG], char* cmdString, map<unsigned int, pJob>*
 jobs);

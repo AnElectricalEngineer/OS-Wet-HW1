@@ -62,8 +62,7 @@ int main(int argc, char *argv[])
 
     /************************************/
     // Init globals
-
-
+    
 
     L_Fg_Cmd =(char*)malloc(sizeof(char)*(MAX_LINE_SIZE+1));
     if (L_Fg_Cmd == NULL)
@@ -78,9 +77,6 @@ int main(int argc, char *argv[])
         fgets(lineSize, MAX_LINE_SIZE, stdin);
         strcpy(cmdString, lineSize);
         cmdString[strlen(lineSize)-1]='\0';
-        // background command
-        // TODO probably delete BgCmd also
-        //if(!BgCmd(lineSize, jobs)) continue;
         // built in commands
         ExeCmd(jobs, lineSize, cmdString);
 

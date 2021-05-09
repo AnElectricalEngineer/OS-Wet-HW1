@@ -22,8 +22,6 @@ string lastFgJobName;
 //******************************************************************************
 int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 {
-
-    // TODO ask how does signal handler work, who gets CTRL-Z/C ...?
     //TODO (not question) take care of printing whenever signals are sent
     char* cmd;
     char* args[MAX_ARG];
@@ -205,6 +203,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             return 1;
         }
 
+        updateJobs(jobs); //TODO tell Keren added this - check
         auto jobIt = jobs->find(jobNum);
 
         // If job does not exist in jobs
@@ -233,6 +232,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
                 cout << "signal " << strsignal(sig) << " was sent to pid " <<
                 jobPid
                 << endl;
+                updateJobs(jobs); // TODO tell Keren I added this
             }
         }
     }
@@ -696,8 +696,6 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 void ExeExternal(char *args[MAX_ARG], char* cmdString, map<unsigned int, pJob>*
 jobs)
 {
-    // TODO (not question) Need to test if external commands work. Tested
-    //  failures - work.
     // TODO  (not question) Need to add return 1 to perrors here
     int pID;
     switch(pID = fork())
@@ -756,32 +754,6 @@ jobs)
     }
 }
 
-//TODO delete
-//******************************************************************************
-// function name: BgCmd
-// Description: if command is in background, insert the command to jobs
-// Parameters: command string, pointer to jobs
-// Returns: 0- BG command -1- if not
-//******************************************************************************
-//int BgCmd(char* lineSize, void* jobs)
-//{
-//
-//    char* Command;
-//    char* delimiters = " \t\n";
-//    char *args[MAX_ARG];
-//    if (lineSize[strlen(lineSize)-2] == '&')
-//    {
-//        lineSize[strlen(lineSize)-2] = '\0';
-//        // Add your code here (execute a in the background)
-//
-//        /*
-//        your code
-//        */
-//
-//    }
-//    return -1;
-//}
-
 //******************************************************************************
 // function name: enqueueNewCmd
 // Description: adds a new command to the history of commands
@@ -817,7 +789,11 @@ bool updateJobs(map<unsigned int, pJob>* jobs)
         //Sys call error
         if(waitPid == -1)
         {
-            return true;
+            // TODO TELL KEREN THIS FIXED THE PROBLEM - but now function
+            //  always returns false = will never return illegal_cmd == true
+            delete it->second;
+            it = jobs->erase(it);
+            //return true;
         }
 
         // if job HAS changed status
