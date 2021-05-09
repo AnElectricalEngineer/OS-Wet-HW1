@@ -1,4 +1,4 @@
-C:\Users\joshu\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\211.7142.21\bin\cmake\win\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" "C:\Users\joshu\Desktop\Technion\Operating Systems Wet Homework\OS-Wet-HW1"
+C:\Users\Joshua\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\211.7142.21\bin\cmake\win\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" "D:\Technion\Operating Systems Wet Homework\OS-Wet-HW1"
 -- The C compiler identification is GNU 9.2.0
 -- The CXX compiler identification is GNU 9.2.0
 -- Detecting C compiler ABI info
@@ -13,4 +13,4 @@ C:\Users\joshu\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\211.7142.21\bin\c
 -- Detecting CXX compile features - done
 -- Configuring done
 -- Generating done
--- Build files have been written to: C:/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-debug
+-- Build files have been written to: D:/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-debug

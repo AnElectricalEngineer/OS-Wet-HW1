@@ -1,4 +1,4 @@
-# Install script for directory: /mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1
+# Install script for directory: /mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/mnt/c/Users/joshu/Desktop/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/mnt/d/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-wsl/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

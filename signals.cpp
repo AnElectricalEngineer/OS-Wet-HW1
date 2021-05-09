@@ -37,11 +37,8 @@ void handler_cntlz(int sig_num)
         {
             //  Print that signal was sent
             printf("signal SIGTSTP was sent to pid %d\n", lastFgPid);
+            updateJobs(jobs);
 
-            // TODO I think run updateJobs first, because otherwise, a
-            //  process that was previously in jobs, and finished, would
-            //  still be in jobs
-            updateJobs(jobs); //TODO check if works + maybe add to ctrl c
             //  Check if process was previously in jobs
             auto it = jobs->begin();
             while(it != jobs->end() && !jobs->empty())
@@ -92,7 +89,7 @@ void handler_cntlc(int sig_num)
         else
         {
             printf("signal SIGINT was sent to pid %d\n", lastFgPid);
-            updateJobs(jobs); // TODO probably unnecessary but doesnt hurt
+            updateJobs(jobs);
         }
     }
 }

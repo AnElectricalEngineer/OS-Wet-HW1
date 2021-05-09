@@ -19,9 +19,6 @@ using namespace std;
 char* L_Fg_Cmd;
 map<unsigned int, pJob>* jobs;  // Data structure to hold jobs
 
-//void* jobs = NULL; //This represents the list of jobs. Please change to a
-// preferred type (e.g array of char*)
-
 char lineSize[MAX_LINE_SIZE];
 
 //******************************************************************************
@@ -83,7 +80,7 @@ int main(int argc, char *argv[])
         cmdString[strlen(lineSize)-1]='\0';
         // background command
         // TODO probably delete BgCmd also
-        if(!BgCmd(lineSize, jobs)) continue;
+        //if(!BgCmd(lineSize, jobs)) continue;
         // built in commands
         ExeCmd(jobs, lineSize, cmdString);
 
