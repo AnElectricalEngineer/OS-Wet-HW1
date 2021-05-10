@@ -229,6 +229,8 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             // If sending signal sending succeeded
             else
             {
+                // TODO add here and ANYWHERE that signal is printed "smash >
+                //  " before "signal ..."...as per PDF
                 cout << "signal " << strsignal(sig) << " was sent to pid " <<
                 jobPid
                 << endl;

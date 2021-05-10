@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 
     /************************************/
     // Init globals
-    
+
 
     L_Fg_Cmd =(char*)malloc(sizeof(char)*(MAX_LINE_SIZE+1));
     if (L_Fg_Cmd == NULL)
