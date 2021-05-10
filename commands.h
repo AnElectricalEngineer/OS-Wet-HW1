@@ -15,10 +15,10 @@
 #include <string>
 #include <map>
 #include <iostream>
-#include <fcntl.h> //TODO for open - check if allowed
+#include <fcntl.h>
 //******************************************************************************
 
-#define MAX_LINE_SIZE 800 //TODO CHANGE BACK TO 80!
+#define MAX_LINE_SIZE 80
 #define MAX_ARG 20
 #define BUFF_SIZE 100
 
@@ -38,6 +38,6 @@ jobs);
 
 //Helper functions
 void enqueueNewCmd(queue<string>* historyPtr, char* cmdString);
-bool updateJobs(map<unsigned int, pJob>* jobs);
+void updateJobs(map<unsigned int, pJob>* jobs);
 #endif
 

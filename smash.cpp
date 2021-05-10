@@ -11,7 +11,7 @@ main file. This file contains the main function of smash
 #include "commands.h"
 #include "signals.h"
 #include <map>
-#define MAX_LINE_SIZE 800 //TODO change back to 80
+#define MAX_LINE_SIZE 80
 #define MAXARGS 20
 
 using namespace std;

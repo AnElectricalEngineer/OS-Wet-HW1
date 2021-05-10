@@ -22,11 +22,10 @@ string lastFgJobName;
 //******************************************************************************
 int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 {
-    //TODO (not question) take care of printing whenever signals are sent
     char* cmd;
     char* args[MAX_ARG];
     char pwd[MAX_LINE_SIZE];
-    char* delimiters = " \t\n";
+    char delimiters[] = " \t\n";
     int i = 0, num_arg = 0;
     bool illegal_cmd = false; // illegal command
     cmd = strtok(lineSize, delimiters);
@@ -140,7 +139,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     /*************************************************/
 
-    else if (!strcmp(cmd, "jobs"))  //TODO test with actual bg process
+    else if (!strcmp(cmd, "jobs"))
     {
         //  Check that number of parameters is correct (0)
         if(num_arg != 0)
@@ -150,29 +149,25 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         }
 
         // Update jobs
-        illegal_cmd = updateJobs(jobs);
+        updateJobs(jobs);
 
-        // If there were no sys call errors in updateJobs
-        if(!illegal_cmd)
+        // Print jobs
+        auto it = jobs->begin();
+        while(it != jobs->end() && !jobs->empty())
         {
-            // Print jobs
-            auto it = jobs->begin();
-            while(it != jobs->end() && !jobs->empty())
-            {
-                time_t currentTime = time(NULL);
+            time_t currentTime = time(NULL);
 
-                cout << "[" << it->first << "] " << it->second->jobName << " : "
-                     << it->second->jobPid << " " << currentTime -
-                     it->second->jobStartTime << " secs " <<
-                     it->second->jobStatus << endl;
+            cout << "[" << it->first << "] " << it->second->jobName << " : "
+                 << it->second->jobPid << " " << currentTime -
+                 it->second->jobStartTime << " secs " <<
+                 it->second->jobStatus << endl;
 
-                ++it;
-            }
+            ++it;
         }
     }
 
     /*************************************************/
-    //TODO (not question) test this, including errors
+
     else if (!strcmp(cmd, "kill"))
     {
         //Check if number of parameters is correct (2)
@@ -203,7 +198,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             return 1;
         }
 
-        updateJobs(jobs); //TODO tell Keren added this - check
+        updateJobs(jobs);
         auto jobIt = jobs->find(jobNum);
 
         // If job does not exist in jobs
@@ -229,12 +224,11 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             // If sending signal sending succeeded
             else
             {
-                // TODO add here and ANYWHERE that signal is printed "smash >
-                //  " before "signal ..."...as per PDF
-                cout << "signal " << strsignal(sig) << " was sent to pid " <<
+                cout << "smash > signal " << strsignal(sig) << " was sent to "
+                                                              "pid " <<
                 jobPid
                 << endl;
-                updateJobs(jobs); // TODO tell Keren I added this
+                updateJobs(jobs);
             }
         }
     }
@@ -288,7 +282,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
                 lastFgPid = jobPid;
                 lastFgJobName = jobName;
                 printf("signal SIGCONT was sent to pid %d\n", jobPid);
-                waitpid(jobPid, NULL, NULL);
+                waitpid(jobPid, NULL, 0);
                 isFgProcess = false;
             }
         }
@@ -324,7 +318,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
                     lastFgPid = jobPid;
                     lastFgJobName = jobName;
                     printf("signal SIGCONT was sent to pid %d\n", jobPid);
-                    waitpid(jobPid, NULL, NULL);
+                    waitpid(jobPid, NULL, 0);
                     isFgProcess = false;
                 }
             }
@@ -452,7 +446,6 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     /*************************************************/
 
-    //TODO work on this
     else if (!strcmp(cmd, "quit"))
     {
         //  Check that number of parameters is correct (0 or 1)
@@ -462,8 +455,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             return 1;
         }
 
-        //TODO ask how should quit work? send SIGKILL to each bg process? or exit?
-        if (num_arg == 0)
+        else if (num_arg == 0)
         {
             exit(0);
         }
@@ -471,13 +463,53 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         {
             if(!strcmp(args[1], "kill"))    // If first argument is "kill"
             {
-                //TODO (not question) do this
+                updateJobs(jobs);
+
+                // Iterate over all jobs in jobs
+                auto it = jobs->begin();
+                pid_t currentPid;
+                while(it != jobs->end() && !jobs->empty())
+                {
+                    currentPid = it->second->jobPid;
+                    int didKillFail = kill(currentPid, SIGTERM);
+                    if(didKillFail == -1)
+                    {
+                        fprintf(stderr, "smash error: > %s\n", strerror(errno));
+                    }
+                    cout << "[" << it->first << "] " << it->second->jobName
+                    << " - Sending SIGTERM... ";
+
+                    sleep(5);
+                    int waitRetVal = waitpid(currentPid, NULL, WNOHANG);
+                    if(waitRetVal == -1)
+                    {
+                        fprintf(stderr, "smash error: > %s\n", strerror(errno));
+                    }
+                    // If process was not terminated
+                    else if(waitRetVal == 0)
+                    {
+                        int didKillFail2 = kill(currentPid, SIGKILL);
+                        if(didKillFail2 == -1)
+                        {
+                            fprintf(stderr, "smash error: > %s\n", strerror(errno));
+                        }
+                        cout << "(5 sec passed) Sending SIGKILL... Done." <<
+                        endl;
+                    }
+                    else
+                    {
+                        cout << "Done." << endl;
+                    }
+                    ++it;
+                }
+                // Exit from smash
+                exit(0);
             }
-        }
-        else //error occurred
-        {
-            cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
-            return 1;
+            else    // If 1 arg, but is not "kill"
+            {
+                cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+                return 1;
+            }
         }
     }
 
@@ -512,10 +544,6 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     /*************************************************/
 
-        //TODO ask what should happen if file being written to is
-        // longer than file writing from. Should we delete all contents of
-        // file being written to? Currently, content at end is saved.
-
     else if (!strcmp(cmd, "cp"))
     {
         //  Check that number of parameters is correct (2)
@@ -538,7 +566,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         }
         else
         {
-            int fd2 = open(pathName2, O_WRONLY);
+            int fd2 = open(pathName2, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
 
             // Check if opening file 2 fails
             if(fd2 == -1)
@@ -598,11 +626,6 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
             return 1;
         }
-
-        // We checked this function! To check again, put folder of test
-        // files in c drive (only works with short path)
-
-        //TODO (not question) Check if opening same file twice works
 
         // Paths for two files to diff
         const char* pathName1 = args[1];
@@ -698,7 +721,6 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 void ExeExternal(char *args[MAX_ARG], char* cmdString, map<unsigned int, pJob>*
 jobs)
 {
-    // TODO  (not question) Need to add return 1 to perrors here
     int pID;
     switch(pID = fork())
     {
@@ -720,11 +742,6 @@ jobs)
 
         default:
             // If command should be run in background
-
-            //TODO CURRENTLY there is an error here. If you run an illegal
-            // external command (eg 'ls &' instead of '/bin/ls &'), it is
-            // still added to jobs.
-
             if (cmdString[strlen(cmdString)-1] == '&')
             {
                 cmdString[strlen(cmdString)-1] = '\0';
@@ -743,13 +760,9 @@ jobs)
             // If command should be run in foreground
             else
             {
-                //wait(NULL);
                 isFgProcess = true;
                 lastFgPid = pID;
                 lastFgJobName = args[0];
-                // TODO check this
-                // waitPid with WUNTRACED option will return if child (fg
-                // process) is terminated OR stopped
                 waitpid(pID, NULL, WUNTRACED);
                 isFgProcess = false;
             }
@@ -775,9 +788,9 @@ void enqueueNewCmd(queue<string>* historyPtr, char* cmdString)
 // function name: updateJobs
 // Description: iterates over jobs and updates process statuses
 // Parameters: pointer to jobs
-// Returns: false if succeeded, true if sys call fail
+// Returns: void
 //******************************************************************************
-bool updateJobs(map<unsigned int, pJob>* jobs)
+void updateJobs(map<unsigned int, pJob>* jobs)
 {
     // Check for processes that have finished and remove them
     auto it = jobs->begin();
@@ -788,14 +801,12 @@ bool updateJobs(map<unsigned int, pJob>* jobs)
         pid_t waitPid = waitpid(currentJobPid, &processStatus,
                                 WNOHANG | WUNTRACED | WCONTINUED);
 
-        //Sys call error
+        //Sys call error - if process was stopped and then killed with signal
+        // other than SIGKILL, clean its entry from jobs
         if(waitPid == -1)
         {
-            // TODO TELL KEREN THIS FIXED THE PROBLEM - but now function
-            //  always returns false = will never return illegal_cmd == true
             delete it->second;
             it = jobs->erase(it);
-            //return true;
         }
 
         // if job HAS changed status
@@ -815,7 +826,6 @@ bool updateJobs(map<unsigned int, pJob>* jobs)
                 ++it;
             }
 
-            // TODO check if necessary
             // If processes was continued by means of SIGCONT
             else if(WIFCONTINUED(processStatus))
             {
@@ -830,5 +840,4 @@ bool updateJobs(map<unsigned int, pJob>* jobs)
             ++it;
         }
     }
-    return false;
 }

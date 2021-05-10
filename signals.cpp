@@ -36,7 +36,8 @@ void handler_cntlz(int sig_num)
         else
         {
             //  Print that signal was sent
-            printf("signal SIGTSTP was sent to pid %d\n", lastFgPid);
+            //TODO check for answer re use of strsignal()
+            printf("smash > signal SIGTSTP was sent to pid %d\n", lastFgPid);
             updateJobs(jobs);
 
             //  Check if process was previously in jobs
@@ -88,7 +89,8 @@ void handler_cntlc(int sig_num)
         //If signal was successfully sent
         else
         {
-            printf("signal SIGINT was sent to pid %d\n", lastFgPid);
+            //TODO check for answer re use of strsignal()
+            printf("smash > signal SIGINT was sent to pid %d\n", lastFgPid);
             updateJobs(jobs);
         }
     }
