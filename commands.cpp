@@ -13,6 +13,15 @@ bool isFgProcess = false;
 pid_t lastFgPid;
 string lastFgJobName;
 
+static string sigList[] = {
+        "INVALID", "SIGHUP", "SIGINT", "SIGQUIT", "SIGILL",
+        "SIGTRAP", "SIGABRT", "SIGBUS", "SIGFPE", "SIGKILL",
+        "SIGUSR1", "SIGSEGV", "SIGUSR2", "SIGPIPE", "SIGALRM",
+        "SIGTERM", "SIGSTKFLT", "SIGCHLD", "SIGCONT", "SIGSTOP",
+        "SIGTSTP", "SIGTTIN", "SIGTTOU", "SIGURG", "SIGXCPU",
+        "SIGXFSZ", "SIGVTALRM", "SIGPROF", "SIGWINCH", "SIGIO",
+        "SIGPWR", "SIGSYS"
+};
 
 //******************************************************************************
 // function name: ExeCmd
@@ -224,7 +233,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             // If sending signal sending succeeded
             else
             {
-                cout << "smash > signal " << strsignal(sig) << " was sent to "
+                cout << "smash > signal " << sigList[sig] << " was sent to "
                                                               "pid " <<
                 jobPid
                 << endl;
