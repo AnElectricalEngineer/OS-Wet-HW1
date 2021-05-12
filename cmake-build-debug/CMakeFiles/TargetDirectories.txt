@@ -1,3 +1,0 @@
-D:/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-debug/CMakeFiles/smash.dir
-D:/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/Technion/Operating Systems Wet Homework/OS-Wet-HW1/cmake-build-debug/CMakeFiles/rebuild_cache.dir

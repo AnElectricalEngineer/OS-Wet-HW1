@@ -1,3 +1,0 @@
-C:\Users\Joshua\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\211.7142.21\bin\cmake\win\bin\cmake.exe -E rm -f CMakeFiles\smash.dir/objects.a
-C:\MinGW\bin\ar.exe cr CMakeFiles\smash.dir/objects.a @CMakeFiles\smash.dir\objects1.rsp
-C:\MinGW\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\smash.dir/objects.a -Wl,--no-whole-archive -o smash.exe -Wl,--out-implib,libsmash.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\smash.dir\linklibs.rsp
