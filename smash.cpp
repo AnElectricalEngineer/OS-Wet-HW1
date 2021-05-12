@@ -1,4 +1,4 @@
-/*	smash.c
+/*	smash.cpp
 main file. This file contains the main function of smash
 *******************************************************************************/
 #include <sys/types.h>
@@ -11,16 +11,13 @@ main file. This file contains the main function of smash
 #include "commands.h"
 #include "signals.h"
 #include <map>
-#define MAX_LINE_SIZE 800 //TODO change back to 80
+#define MAX_LINE_SIZE 80
 #define MAXARGS 20
 
 using namespace std;
 
 char* L_Fg_Cmd;
 map<unsigned int, pJob>* jobs;  // Data structure to hold jobs
-
-//void* jobs = NULL; //This represents the list of jobs. Please change to a
-// preferred type (e.g array of char*)
 
 char lineSize[MAX_LINE_SIZE];
 
@@ -48,17 +45,23 @@ int main(int argc, char *argv[])
 
     /* add your code here */
 
+    // Set signal handler for CTRL-Z
     struct sigaction ctrlz = {0};
     ctrlz.sa_handler = &handler_cntlz;
     sigfillset(&ctrlz.sa_mask);
     sigaction(SIGTSTP, &ctrlz, NULL);
+
+    // Set signal handler for CTRL-C
+    struct sigaction ctrlc = {0};
+    ctrlc.sa_handler = &handler_cntlc;
+    sigfillset(&ctrlc.sa_mask);
+    sigaction(SIGINT, &ctrlc, NULL);
 
 
     /************************************/
 
     /************************************/
     // Init globals
-
 
 
     L_Fg_Cmd =(char*)malloc(sizeof(char)*(MAX_LINE_SIZE+1));
@@ -74,9 +77,6 @@ int main(int argc, char *argv[])
         fgets(lineSize, MAX_LINE_SIZE, stdin);
         strcpy(cmdString, lineSize);
         cmdString[strlen(lineSize)-1]='\0';
-        // background command
-        // TODO probably delete BgCmd also
-        if(!BgCmd(lineSize, jobs)) continue;
         // built in commands
         ExeCmd(jobs, lineSize, cmdString);
 

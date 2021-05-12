@@ -9,5 +9,6 @@
 #include <signal.h>
 
 void handler_cntlz(int sig_num);
+void handler_cntlc(int sig_num);
 #endif
 

@@ -1,4 +1,4 @@
-//		commands.c
+//		commands.cpp
 //******************************************************************************
 #include "commands.h"
 
@@ -7,7 +7,21 @@
 using namespace std;
 
 // Counter to keep track of highest job number
-static unsigned int totalJobCount = 0;
+unsigned int totalJobCount = 0;
+
+bool isFgProcess = false;
+pid_t lastFgPid;
+string lastFgJobName;
+
+static string sigList[] = {
+        "INVALID", "SIGHUP", "SIGINT", "SIGQUIT", "SIGILL",
+        "SIGTRAP", "SIGABRT", "SIGBUS", "SIGFPE", "SIGKILL",
+        "SIGUSR1", "SIGSEGV", "SIGUSR2", "SIGPIPE", "SIGALRM",
+        "SIGTERM", "SIGSTKFLT", "SIGCHLD", "SIGCONT", "SIGSTOP",
+        "SIGTSTP", "SIGTTIN", "SIGTTOU", "SIGURG", "SIGXCPU",
+        "SIGXFSZ", "SIGVTALRM", "SIGPROF", "SIGWINCH", "SIGIO",
+        "SIGPWR", "SIGSYS"
+};
 
 //******************************************************************************
 // function name: ExeCmd
@@ -17,13 +31,10 @@ static unsigned int totalJobCount = 0;
 //******************************************************************************
 int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 {
-
-    // TODO ask how does signal handler work, who gets CTRL-Z/C ...?
-    //TODO (not question) take care of printing whenever signals are sent
     char* cmd;
     char* args[MAX_ARG];
     char pwd[MAX_LINE_SIZE];
-    char* delimiters = " \t\n";
+    char delimiters[] = " \t\n";
     int i = 0, num_arg = 0;
     bool illegal_cmd = false; // illegal command
     cmd = strtok(lineSize, delimiters);
@@ -146,42 +157,26 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             return 1;
         }
 
-        // Check for processes that have finished and remove them, and print
-        // remaining processes
+        // Update jobs
+        updateJobs(jobs);
+
+        // Print jobs
         auto it = jobs->begin();
         while(it != jobs->end() && !jobs->empty())
         {
-            // Check for processes that have finished and remove them
-            pid_t currentJobPid = it->second->jobPid;
-
-            // TODO didnt check if kill succeeded (smash error) because we
-            //  want it to fail.
-            // TODO ask if this is the correct way to check if process still
-            //  exists. Because processes that have finished never leave our
-            //  jobs.
-            int didKillSucceed = kill(currentJobPid, 0);
-            if(errno == ESRCH && didKillSucceed == -1)
-            {
-                delete it->second;
-                it = jobs->erase(it);
-                continue;
-            }
-
-            // Print each job that is still running
             time_t currentTime = time(NULL);
 
-            //TODO check if colon should have space on both sides, like example
-            cout << "[" << it->first << "] " << it->second->jobName << ": "
-            << it->second->jobPid << " " << currentTime -
-            it->second->jobStartTime << " secs " << it->second->jobStatus <<
-            endl;
+            cout << "[" << it->first << "] " << it->second->jobName << " : "
+                 << it->second->jobPid << " " << currentTime -
+                 it->second->jobStartTime << " secs " <<
+                 it->second->jobStatus << endl;
 
             ++it;
         }
     }
 
     /*************************************************/
-    //TODO (not question) test this, including errors
+
     else if (!strcmp(cmd, "kill"))
     {
         //Check if number of parameters is correct (2)
@@ -199,27 +194,20 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         }
 
         // Convert string arguments to numbers
-
-        //TODO ask if we can assume 0 is not a valid signal because strtol
-        // returns 0 if no conversion can be printed.
-
-        //TODO (not question) maybe use std::stoi?
-        int sig = strtol(args[1] + 1, NULL, 10); // signum
-        int jobNum = strtol(args[2], NULL, 10); // jobID
-
-        // strtol returns 0 if it fails to convert string - that is: if not
-        // value passed to it for conversion is not a number. If either jobNum
-        // or sig are not numbers or if sig is not a valid signal number, error.
-
-        //TODO (not question) change to if(jobNum == 0 || sig == 0) because
-        // Lior said don't need to check that sig is valid signal number,
-        // only that it is a number.
-        if(jobNum == 0 || sig <= 0 || sig > 31)
+        int sig;    // signal number
+        int jobNum; // jobID
+        try
+        {
+            sig = std::stoi(args[1] + 1);
+            jobNum = std::stoi(args[2]);
+        }
+        catch(std::invalid_argument&)
         {
             cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
             return 1;
         }
 
+        updateJobs(jobs);
         auto jobIt = jobs->find(jobNum);
 
         // If job does not exist in jobs
@@ -240,6 +228,16 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
                 cerr << "smash error: > kill " << jobNum << " - cannot send "
                                                             "signal" << endl;
                 return 1;
+            }
+
+            // If sending signal sending succeeded
+            else
+            {
+                cout << "smash > signal " << sigList[sig] << " was sent to "
+                                                              "pid " <<
+                jobPid
+                << endl;
+                updateJobs(jobs);
             }
         }
     }
@@ -264,60 +262,82 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     else if (!strcmp(cmd, "fg"))
     {
-        //  Check that number of parameters is correct (0 or 1)
-        if(num_arg > 1)
+        //  Check that number of parameters is correct (0 or 1), and that jobs
+        //  contains at least one job
+        if(num_arg > 1 || jobs->empty())
         {
             cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
             return 1;
         }
-        //TODO add check what happens when fg is called and jobs is empty
 
-        //TODO (Not question for Lior) check if should send SIGCONT signal
-        // instead of waitpid usage - maybe for STOPPED processes.
-
-        // Remove processes that have finished from jobs
-        removeTermProcesses(jobs);
+        // update jobs list
+        updateJobs(jobs);
 
         if (num_arg == 0)
         {
             pid_t jobPid = (prev(jobs->end()))->second->jobPid;
-            cout << (prev(jobs->end()))->second->jobName << endl;
+            string jobName = (prev(jobs->end()))->second->jobName;
+            cout << jobName << endl;
 
-
-            if (waitpid(jobPid, NULL, NULL) == -1)
+            // Start stopped job
+            int didKillFail = kill(jobPid, SIGCONT);
+            if(didKillFail == -1)
             {
                 illegal_cmd = true;
-            }
-        }
-        else if (num_arg == 1)
-        {
-            // TODO (not question) Go over this - I think if job_id == 0 or
-            //  no job with job_id in jobs -> user error. I think some of
-            //  illegal cmds here are WRONG because they are not due to sys call
-            //  failure.
-            int job_id = strtol(args[1],NULL,10);
-            if ((job_id != 0) && (jobs->find(job_id) != jobs->end()))
-            {
-                pid_t jobPid = jobs->find(job_id)->second->jobPid;
-                cout << jobs->find(jobPid)->second->jobName << endl;
-                if (waitpid(jobPid, NULL, NULL) == -1)
-                {
-                    illegal_cmd = true;
-                }
             }
             else
             {
-                illegal_cmd = true;
-                // TODO (not question) I think here should be
-                //  user error (job id is 0 which means strtol failed or job
-                //  is not in jobs
+                isFgProcess = true;
+                lastFgPid = jobPid;
+                lastFgJobName = jobName;
+                printf("signal SIGCONT was sent to pid %d\n", jobPid);
+                waitpid(jobPid, NULL, 0);
+                isFgProcess = false;
             }
         }
-        else
+
+        else if (num_arg == 1)
         {
-            illegal_cmd = true;
-            // TODO (not question) I think not necessary because either
-            //  num_arg is 0, 1, or >1.
+            int job_id;
+            try
+            {
+                job_id = std::stoi(args[1]);
+            }
+            catch(std::invalid_argument&)
+            {
+                cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+                return 1;
+            }
+
+            if ((jobs->find(job_id) != jobs->end()))
+            {
+                pJob Job = jobs->find(job_id)->second;
+                pid_t jobPid = Job->jobPid;
+                string jobName = Job->jobName;
+                cout << jobName << endl;
+
+                int didKillFail = kill(jobPid, SIGCONT);
+                if(didKillFail == -1)
+                {
+                    illegal_cmd = true;
+                }
+                else
+                {
+                    isFgProcess = true;
+                    lastFgPid = jobPid;
+                    lastFgJobName = jobName;
+                    printf("signal SIGCONT was sent to pid %d\n", jobPid);
+                    waitpid(jobPid, NULL, 0);
+                    isFgProcess = false;
+                }
+            }
+
+            // job_id is a number, but no such job exists in jobs
+            else
+            {
+                cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+                return 1;
+            }
         }
     }
 
@@ -325,7 +345,112 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     else if (!strcmp(cmd, "bg"))
     {
+        //  Check that number of parameters is correct (0 or 1), and that jobs
+        //  contains at least one job
+        if(num_arg > 1 || jobs->empty())
+        {
+            cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+            return 1;
+        }
 
+        // update jobs list
+        updateJobs(jobs);
+
+        // If no supplied arguments, run last stopped job
+        if (num_arg == 0)
+        {
+            //  Iterate over jobs in REVERSE order
+            auto it = jobs->rbegin();
+            bool foundStoppedJob = false;
+            for(; it != jobs->rend(); ++it)
+            {
+                if(it->second->jobStatus == "(Stopped)")
+                {
+                    foundStoppedJob = true;
+                    break;
+                }
+            }
+
+            // If a stopped job exists in jobs
+            if(foundStoppedJob == true)
+            {
+                pid_t jobPid = it->second->jobPid;
+                string jobName = it->second->jobName;
+                cout << jobName << endl;
+
+                // Start stopped job
+                int didKillFail = kill(jobPid, SIGCONT);
+                if(didKillFail == -1)
+                {
+                    illegal_cmd = true;
+                }
+                else
+                {
+                    printf("signal SIGCONT was sent to pid %d\n", jobPid);
+                }
+            }
+
+            // If no stopped jobs exist in jobs, error
+            else
+            {
+                cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+                return 1;
+            }
+        }
+
+        // If one argument was supplied, check if that job is stopped, and if
+        // so, run it
+        else if (num_arg == 1)
+        {
+            int job_id;
+            try
+            {
+                job_id = std::stoi(args[1]);
+            }
+            catch(std::invalid_argument&)
+            {
+                cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+                return 1;
+            }
+
+            // Check if the requested job exists in jobs
+            if ((jobs->find(job_id) != jobs->end()))
+            {
+                pJob Job = jobs->find(job_id)->second;
+
+                // Check if the the job is stopped
+                if(Job->jobStatus == "(Stopped)")
+                {
+                    pid_t jobPid = Job->jobPid;
+                    string jobName = Job->jobName;
+                    cout << jobName << endl;
+
+                    int didKillFail = kill(jobPid, SIGCONT);
+                    if(didKillFail == -1)
+                    {
+                        illegal_cmd = true;
+                    }
+                    else
+                    {
+                        printf("signal SIGCONT was sent to pid %d\n", jobPid);
+                    }
+                }
+
+                // If the chosen job is not stopped.
+                else
+                {
+                    cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+                    return 1;
+                }
+            }
+
+            // If the requested job does not exist in jobs, error
+            else
+            {
+                cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+                return 1;
+            }
+        }
     }
 
     /*************************************************/
@@ -339,8 +464,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             return 1;
         }
 
-        //TODO ask how should quit work? send SIGKILL to each bg process? or exit?
-        if (num_arg == 0)
+        else if (num_arg == 0)
         {
             exit(0);
         }
@@ -348,13 +472,53 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         {
             if(!strcmp(args[1], "kill"))    // If first argument is "kill"
             {
-                //TODO (not question) do this
+                updateJobs(jobs);
+
+                // Iterate over all jobs in jobs
+                auto it = jobs->begin();
+                pid_t currentPid;
+                while(it != jobs->end() && !jobs->empty())
+                {
+                    currentPid = it->second->jobPid;
+                    int didKillFail = kill(currentPid, SIGTERM);
+                    if(didKillFail == -1)
+                    {
+                        fprintf(stderr, "smash error: > %s\n", strerror(errno));
+                    }
+                    cout << "[" << it->first << "] " << it->second->jobName
+                    << " - Sending SIGTERM... ";
+
+                    sleep(5);
+                    int waitRetVal = waitpid(currentPid, NULL, WNOHANG);
+                    if(waitRetVal == -1)
+                    {
+                        fprintf(stderr, "smash error: > %s\n", strerror(errno));
+                    }
+                    // If process was not terminated
+                    else if(waitRetVal == 0)
+                    {
+                        int didKillFail2 = kill(currentPid, SIGKILL);
+                        if(didKillFail2 == -1)
+                        {
+                            fprintf(stderr, "smash error: > %s\n", strerror(errno));
+                        }
+                        cout << "(5 sec passed) Sending SIGKILL... Done." <<
+                        endl;
+                    }
+                    else
+                    {
+                        cout << "Done." << endl;
+                    }
+                    ++it;
+                }
+                // Exit from smash
+                exit(0);
             }
-        }
-        else //error occurred
-        {
-            cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
-            return 1;
+            else    // If 1 arg, but is not "kill"
+            {
+                cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
+                return 1;
+            }
         }
     }
 
@@ -389,10 +553,6 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 
     /*************************************************/
 
-        //TODO ask what should happen if file being written to is
-        // longer than file writing from. Should we delete all contents of
-        // file being written to? Currently, content at end is saved.
-
     else if (!strcmp(cmd, "cp"))
     {
         //  Check that number of parameters is correct (2)
@@ -415,7 +575,7 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
         }
         else
         {
-            int fd2 = open(pathName2, O_WRONLY);
+            int fd2 = open(pathName2, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
 
             // Check if opening file 2 fails
             if(fd2 == -1)
@@ -475,11 +635,6 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
             cerr << "smash error: > " << "\"" << cmdString << "\"" << endl;
             return 1;
         }
-
-        // We checked this function! To check again, put folder of test
-        // files in c drive (only works with short path)
-
-        //TODO (not question) Check if opening same file twice works
 
         // Paths for two files to diff
         const char* pathName1 = args[1];
@@ -575,9 +730,6 @@ int ExeCmd(map<unsigned int, pJob>* jobs, char* lineSize, char* cmdString)
 void ExeExternal(char *args[MAX_ARG], char* cmdString, map<unsigned int, pJob>*
 jobs)
 {
-    // TODO (not question) Need to test if external commands work. Tested
-    //  failures - work.
-    // TODO  (not question) Need to add return 1 to perrors here
     int pID;
     switch(pID = fork())
     {
@@ -599,19 +751,12 @@ jobs)
 
         default:
             // If command should be run in background
-
-            //TODO CURRENTLY there is an error here. If you run an illegal
-            // external command (eg 'ls &' instead of '/bin/ls &'), it is
-            // still added to jobs.
-
-            //TODO check if background tasks should end on their own
             if (cmdString[strlen(cmdString)-1] == '&')
             {
                 cmdString[strlen(cmdString)-1] = '\0';
 
                 // Create new jobs entry
-                pJob pNewJob = new Job; //  TODO (not question) free when job
-                // finishes!
+                pJob pNewJob = new Job;
                 pNewJob->jobName = args[0];
                 pNewJob->jobPid = pID;
                 pNewJob->jobStartTime = time(NULL);
@@ -624,35 +769,13 @@ jobs)
             // If command should be run in foreground
             else
             {
-                wait(NULL);
-                //waitpid(pID, NULL, NULL);
+                isFgProcess = true;
+                lastFgPid = pID;
+                lastFgJobName = args[0];
+                waitpid(pID, NULL, WUNTRACED);
+                isFgProcess = false;
             }
     }
-}
-
-//******************************************************************************
-// function name: BgCmd
-// Description: if command is in background, insert the command to jobs
-// Parameters: command string, pointer to jobs
-// Returns: 0- BG command -1- if not
-//******************************************************************************
-int BgCmd(char* lineSize, void* jobs)
-{
-
-    char* Command;
-    char* delimiters = " \t\n";
-    char *args[MAX_ARG];
-    if (lineSize[strlen(lineSize)-2] == '&')
-    {
-        lineSize[strlen(lineSize)-2] = '\0';
-        // Add your code here (execute a in the background)
-
-        /*
-        your code
-        */
-
-    }
-    return -1;
 }
 
 //******************************************************************************
@@ -671,27 +794,59 @@ void enqueueNewCmd(queue<string>* historyPtr, char* cmdString)
     historyPtr->push(cmdString);
 }
 //******************************************************************************
-// function name: removeTermProcesses
-// Description: iterates over jobs and removes processes that have finished
+// function name: updateJobs
+// Description: iterates over jobs and updates process statuses
 // Parameters: pointer to jobs
 // Returns: void
 //******************************************************************************
-void removeTermProcesses(map<unsigned int, pJob>* jobs)
+void updateJobs(map<unsigned int, pJob>* jobs)
 {
     // Check for processes that have finished and remove them
     auto it = jobs->begin();
     while(it != jobs->end() && !jobs->empty())
     {
-        // Check for processes that have finished and remove them
         pid_t currentJobPid = it->second->jobPid;
-        int didKillFail = kill(currentJobPid, 0);
-        // TODO didnt check if succeeded (smash error) because we expect it
-        //  to fail
-        if (errno == ESRCH && didKillFail == -1)
+        int processStatus;
+        pid_t waitPid = waitpid(currentJobPid, &processStatus,
+                                WNOHANG | WUNTRACED | WCONTINUED);
+
+        //Sys call error - if process was stopped and then killed with signal
+        // other than SIGKILL, clean its entry from jobs
+        if(waitPid == -1)
         {
             delete it->second;
             it = jobs->erase(it);
         }
-        ++it;
+
+        // if job HAS changed status
+        else if(waitPid == currentJobPid)
+        {
+            // If process was terminated normally or by signal
+            if(WIFEXITED(processStatus) || WIFSIGNALED(processStatus))
+            {
+                delete it->second;
+                it = jobs->erase(it);   // Automatically increments iterator
+            }
+
+            // If process was stopped
+            else if(WIFSTOPPED(processStatus))
+            {
+                it->second->jobStatus = "(Stopped)";
+                ++it;
+            }
+
+            // If processes was continued by means of SIGCONT
+            else if(WIFCONTINUED(processStatus))
+            {
+                it->second->jobStatus = "";
+                ++it;
+            }
+        }
+
+        // if job did NOT change status, do not modify its entry in jobs
+        else
+        {
+            ++it;
+        }
     }
 }

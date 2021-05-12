@@ -4,6 +4,7 @@
 CMakeFiles/smash.dir/commands.cpp.o: ../commands.cpp
 CMakeFiles/smash.dir/commands.cpp.o: ../commands.h
 
+CMakeFiles/smash.dir/signals.cpp.o: ../commands.h
 CMakeFiles/smash.dir/signals.cpp.o: ../signals.cpp
 CMakeFiles/smash.dir/signals.cpp.o: ../signals.h
 
