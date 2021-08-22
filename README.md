@@ -12,4 +12,4 @@ Smash can execute both built-in commands, such as 'cd' or 'pwd' and external com
 
 ## Build from source
 
-To build from source, first clone the repository. Then open a terminal in the folder where you cloned the repository and run `make`.
+To build from source, first clone the repository. Then open a terminal in the directory into which you cloned the repository and run `make`.
