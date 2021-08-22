@@ -1,4 +1,4 @@
-# OS-Wet-HW1
+# Smash
  
 Smash (**Sma**ll **Sh**ell) is a new, basic shell for GNU/Linux operating systems. 
 
